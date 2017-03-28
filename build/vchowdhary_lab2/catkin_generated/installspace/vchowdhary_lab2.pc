@@ -1,0 +1,8 @@
+prefix=/home/vchowdhary/rbe3002/install
+
+Name: vchowdhary_lab2
+Description: Description of vchowdhary_lab2
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/vchowdhary/rbe3002/install/lib 
+Requires: 
