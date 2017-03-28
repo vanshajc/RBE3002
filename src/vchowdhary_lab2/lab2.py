@@ -19,7 +19,10 @@ def navToPose(goal):
 
 #This function sequentially calls methods to perform a trajectory.
 def executeTrajectory():
-	pass  # Delete this 'pass' once implemented
+	driveStraight(0.5, 0.6)
+	rotate(-90)
+	driveStraight(0.5, 0.45)
+	rotate(90)
 
 
 
@@ -64,19 +67,19 @@ def toGlobal(angle):
     
 #Accepts an angle and makes the robot rotate around it.
 def rotate(angle):
-	global odom_list
 	global pose
 	
 	done = False
-	dest = (angle + toGlobal(math.degrees(pose.pose.orientation.z)))%360
+	dest = ((angle) + toGlobal(math.degrees(pose.pose.orientation.z)))%360
   	print "Destination", dest
+
 	while (not done and not rospy.is_shutdown()):
-		print "Current Angle", toGlobal(math.degrees(pose.pose.orientation.z))
-		error = dest - toGlobal(math.degrees(pose.pose.orientation.z))
-		e2 = dest + 360 - toGlobal(math.degrees(pose.pose.orientation.z))
+		#print "Current Angle", toGlobal(math.degrees(pose.pose.orientation.z))
+		error = (dest - toGlobal(math.degrees(pose.pose.orientation.z)))%360
+		e2 = (360 + toGlobal(math.degrees(pose.pose.orientation.z)) - dest)%360
 		if (abs(e2) < abs(error)):
-			error = e2
-		if (abs(error) <= 2):
+			error = -1*e2
+		if (abs(error) <= 0.5):
 			done = True
 		publishTwist(0, 1.5 * error/90)
 		rospy.sleep(0.1)
@@ -96,8 +99,7 @@ def driveArc(radius, speed, angle):
 #Bumper Event Callback function
 def readBumper(msg):
 	if (msg.state == 1):
-        # What should happen when the bumper is pressed?
-		pass  # Delete this 'pass' once implemented
+		executeTrajectory()
 
 def publishTwist(linV, angV):
 	global pub
@@ -124,7 +126,6 @@ def timerCallback(event):
 	roll, pitch, yaw = euler_from_quaternion(q)
 	
 	pose.pose.orientation.z = yaw
-	theta = math.degrees(yaw)
 
 
 
@@ -155,11 +156,10 @@ if __name__ == '__main__':
 	rospy.sleep(rospy.Duration(2, 0))
 	print "Starting Lab 2"
 
-   
 
     # Make the robot do stuff...
 	#spinWheels(1, 1, 10)
 	#driveStraight(0.5, 1)
-	rotate(90)	
+	executeTrajectory()
 	print "Lab 2 complete!"
 
