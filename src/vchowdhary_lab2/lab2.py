@@ -12,7 +12,6 @@ from tf.transformations import euler_from_quaternion
 def navToPose(goal):
 	diffX = goal.pose.position.x - pose.pose.position.x
     diffY = goal.pose.position.y - pose.pose.position.y
-
     rotate(degrees(atan2(diffY, diffX)))
     driveStraight(1, sqrt(diffX**2 + diffY**2))
     rotate(pose.pose.orientation.z - degrees(goal.pose.orientation.z))
@@ -20,6 +19,7 @@ def navToPose(goal):
 
 #This function sequentially calls methods to perform a trajectory.
 def executeTrajectory():
+
 	driveStraight(0.5, 0.6)
 	rotate(-90)
 	driveStraight(0.5, 0.45)
