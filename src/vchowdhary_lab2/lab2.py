@@ -11,10 +11,10 @@ from tf.transformations import euler_from_quaternion
 #drive to a goal subscribed as /move_base_simple/goal
 def navToPose(goal):
 	diffX = goal.pose.position.x - pose.pose.position.x
-    diffY = goal.pose.position.y - pose.pose.position.y
-    rotate(degrees(atan2(diffY, diffX)))
-    driveStraight(1, sqrt(diffX**2 + diffY**2))
-    rotate(pose.pose.orientation.z - degrees(goal.pose.orientation.z))
+	diffY = goal.pose.position.y - pose.pose.position.y
+	rotate(degrees(atan2(diffY, diffX)))
+	driveStraight(1, sqrt(diffX**2 + diffY**2))
+	rotate(pose.pose.orientation.z - degrees(goal.pose.orientation.z))
 
 
 #This function sequentially calls methods to perform a trajectory.
