@@ -10,19 +10,35 @@ from tf.transformations import euler_from_quaternion
 
 #drive to a goal subscribed as /move_base_simple/goal
 def navToPose(goal):
-	print "spin!"
-	print "move!"
-	print "spin!"
-	print "done"
-	pass
+	rospy.sleep(0.1)	
+	diffX = goal.pose.position.x - pose.pose.position.x
+	diffY = goal.pose.position.y - pose.pose.position.y
+	print goal.pose.position.x
+	print goal.pose.position.y
+	print pose.pose.position.x
+	print pose.pose.position.y
+	print "Distance", diffX, diffY
+	print "Rotate by", math.degrees(math.atan2(diffX, diffY) + pose.pose.orientation.z)
+	print "Current:", pose.pose.position.x, pose.pose.position.y
 
+
+	rotate((math.degrees(math.atan2(diffY, diffX) - pose.pose.orientation.z))%360)
+
+
+	rospy.sleep(0.1)
+	driveTo(math.sqrt(diffX**2 + diffY**2))
+	rospy.sleep(0.1)
+	print "Rotating again", math.degrees(goal.pose.orientation.z - pose.pose.orientation.z)
+	rotate((math.degrees(goal.pose.orientation.z - pose.pose.orientation.z)))
+	print "Finished"
 
 #This function sequentially calls methods to perform a trajectory.
 def executeTrajectory():
+
 	driveStraight(0.5, 0.6)
 	rotate(-90)
 	driveStraight(0.5, 0.45)
-	rotate(135)
+	rotate(90)
 
 
 
@@ -41,6 +57,22 @@ def spinWheels(u1, u2, time):
 
 	publishTwist(0, 0)
 
+def driveTo(distance):
+	global pose
+	ix = pose.pose.position.x
+	iy = pose.pose.position.y
+	reached = False
+
+	while (not reached and not rospy.is_shutdown()):
+		cx = pose.pose.position.x - ix
+		cy = pose.pose.position.y - iy
+		cd = math.sqrt(cx **2 + cy **2)
+		if (cd >= distance):
+			reached = True
+			publishTwist(0, 0)
+		else:
+			publishTwist((distance - cd)*5/distance, 0)
+			rospy.sleep(0.10)
 
 #This function accepts a speed and a distance for the robot to move in a straight line
 def driveStraight(speed, distance):
@@ -58,7 +90,7 @@ def driveStraight(speed, distance):
 			publishTwist(0, 0)
 		else:
 			publishTwist(speed, 0)
-			rospy.sleep(0.15)
+			rospy.sleep(0.10)
 
 def toGlobal(angle):
 	if (angle <= 180 and angle >= 0):
@@ -71,7 +103,6 @@ def rotate(angle):
 	
 	done = False
 	dest = ((angle) + toGlobal(math.degrees(pose.pose.orientation.z)))%360
-  	print "Destination", dest
 
 	while (not done and not rospy.is_shutdown()):
 		#print "Current Angle", toGlobal(math.degrees(pose.pose.orientation.z))
@@ -141,11 +172,12 @@ if __name__ == '__main__':
 	global odom_list
    
 	pose = PoseStamped()
-    # Replace the elipses '...' in the following lines to set up the publishers and subscribers the lab requires
+
 	pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, None, queue_size=10) 
 # Publisher for commanding robot motion
 	bumper_sub = rospy.Subscriber('/mobile_base/events/bumper', BumperEvent, readBumper, queue_size=1) # Callback function to handle bumper events
 
+	nav_sub = rospy.Subscriber('/vanisamazing', PoseStamped, navToPose)
     # Use this object to get the robot's Odometry 
 	odom_list = tf.TransformListener()
     
@@ -155,11 +187,10 @@ if __name__ == '__main__':
     # Use this command to make the program wait for some seconds
 	rospy.sleep(rospy.Duration(2, 0))
 	print "Starting Lab 2"
-
-
+	rospy.sleep(10000)
     # Make the robot do stuff...
 	#spinWheels(1, 1, 10)
 	#driveStraight(0.5, 1)
-	executeTrajectory()
+	#executeTrajectory()
 	print "Lab 2 complete!"
 
