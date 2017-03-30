@@ -35,10 +35,10 @@ def navToPose(goal):
 #This function sequentially calls methods to perform a trajectory.
 def executeTrajectory():
 
-	driveStraight(0.5, 0.6)
+	driveStraight(0.2, 0.6)
 	rotate(-90)
-	driveStraight(0.5, 0.45)
-	rotate(90)
+	driveStraight(0.2, 0.45)
+	rotate(135)
 
 
 
@@ -110,9 +110,9 @@ def rotate(angle):
 		e2 = (360 + toGlobal(math.degrees(pose.pose.orientation.z)) - dest)%360
 		if (abs(e2) < abs(error)):
 			error = -1*e2
-		if (abs(error) <= 0.5):
+		if (abs(error) <= 2):
 			done = True
-		publishTwist(0, 1.5 * error/90)
+		publishTwist(0, 2 * error/90)
 		rospy.sleep(0.1)
 
 	publishTwist(0, 0)
@@ -145,9 +145,9 @@ def publishTwist(linV, angV):
 #   rospy.Timer(rospy.Duration(.01), timerCallback)
 def timerCallback(event):
 	global pose
-
-	odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
-	(position, orientation) = odom_list.lookupTransform('map','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
+	#print "timercallback"
+	odom_list.waitForTransform('odom', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
+	(position, orientation) = odom_list.lookupTransform('odom','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
 	pose.pose.position.x = position[0]
 	pose.pose.position.y = position[1]
 
@@ -179,10 +179,12 @@ if __name__ == '__main__':
 
 	nav_sub = rospy.Subscriber('/vanisamazing', PoseStamped, navToPose)
     # Use this object to get the robot's Odometry 
+	#make the robot keep doing something...
+	rospy.Timer(rospy.Duration(0.01), timerCallback)
+
 	odom_list = tf.TransformListener()
     
- 	#make the robot keep doing something...
-	rospy.Timer(rospy.Duration(0.01), timerCallback)
+ 	
 
     # Use this command to make the program wait for some seconds
 	rospy.sleep(rospy.Duration(2, 0))
@@ -190,7 +192,7 @@ if __name__ == '__main__':
 	rospy.sleep(10000)
     # Make the robot do stuff...
 	#spinWheels(1, 1, 10)
-	#driveStraight(0.5, 1)
+	#driveStraight(0.2, 1)
 	#executeTrajectory()
 	print "Lab 2 complete!"
 
