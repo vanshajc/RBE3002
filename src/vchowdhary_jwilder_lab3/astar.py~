@@ -8,7 +8,6 @@ class Astar:
 		self.start = start
 		self.goal = goal
 		self.frontier = PriorityQueue()
-		self.visited = []
 		self.path = []
 		self.oc = oc
 		self.pub_end = pub_end
@@ -23,34 +22,39 @@ class Astar:
 	def calculate(self):
 		self.frontier.put((0, (self.start, [], 0)))
 		frontierList = []
+		visited = set()
 		frontierList.append(self.start)		
 
 		while (not self.frontier.empty()):
 			(p, (curr, path, cost)) = self.frontier.get()
 			frontierList.remove(curr)
-
-			self.visited.append(curr)
-			#print 'Current', curr, self.heuristic(curr)
+			visited.add(curr)
+			#print 'Current', curr, self.heuristic(curr), self.isOccupied(curr)
 			if (curr == self.goal):
 				print 'WE DID IT'
 				self.path = path
 				break
 			for n in self.getAdjacent(curr):
 				prio = self.heuristic(n) + cost + self.costTo(curr, n)
-				if ((not n in self.visited) and self.within(n) and (not self.isOccupied(n))):
+				print 'Trying', n, n in visited, prio
+				if ((n not in visited) and self.within(n) and (not self.isOccupied(n))):
 					a = [i for i in path]
 					a.append(n)
 					self.frontier.put((prio, (n, a, cost + self.costTo(curr, n))))
+					print 'Adding to frontier', n				
 					frontierList.append(n)
-			print 'Publishing'
+			
 			visitCells(frontierList, self.pub_frontier)
-			visitCells(self.visited, self.pub_visited)
-		#rospy.sleep(1)
+			visitCells(visited, self.pub_visited)
+
 		print '-----------------------------'
-		print self.visited	
+		print visited
+		visitCells(visited, self.pub_visited)
+		visitCells(self.path, self.pub_path)		
+		print '-----------------------------'
 
 	def within(self, n):
-		return n.x <= self.oc.info.resolution * self.oc.info.width * 2 and n.x >= 0 and n.y >= 0 and n.y <= self.oc.info.resolution * self.oc.info.width * 2
+		return n.x <= self.oc.info.resolution * self.oc.info.width * 4 and n.x >= 0 and n.y >= 0 and n.y <= self.oc.info.resolution * self.oc.info.width * 4
 
 	def heuristic(self, point):
 		return abs(self.goal.x - point.x) + abs(self.goal.y - point.y)
@@ -76,13 +80,13 @@ def visitCells(lofp, pub):
 	
 	grid = GridCells()
 	grid.header.frame_id = 'map'
-	grid.cell_width = 0.5
-	grid.cell_height = 0.5
+	grid.cell_width = 0.25
+	grid.cell_height = 0.25
 
 	for p in lofp:
 		point = Point()
-		point.x = p.x*0.5
-		point.y = p.y*0.5
+		point.x = p.x*0.5 - 0.25
+		point.y = p.y*0.5 - 0.25
 		grid.cells.append(point)
 
 	pub.publish(grid)
