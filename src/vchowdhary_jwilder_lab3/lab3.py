@@ -226,11 +226,9 @@ if __name__ == '__main__':
 	p1.x = 4
 	p1.y = 15
 	p2 = Point()
-	p2.x = 12
-	p2.y = 25
-	l = [p1, p2]
+	p2.x = 35
+	p2.y = 35
 	
-	visitCells(l, pub_end)
 	print oc.info.width, oc.data[int(p1.x + p1.y*oc.info.width)]
 	r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier)
 	r.calculate()
