@@ -143,26 +143,6 @@ def publishTwist(linV, angV):
 	msg.linear.x = linV
 	msg.angular.z = angV
 	pub.publish(msg)
-
-def visitCells(lofp, typ):
-	global pub_end
-	global pub_path
-	
-	grid = GridCells()
-	grid.header.frame_id = 'map'
-	grid.cell_width = 0.5
-	grid.cell_height = 0.5
-
-	for p in lofp:
-		point = Point()
-		point.x = p.x*0.5
-		point.y = p.y*0.5
-		grid.cells.append(point)
-
-	if (typ == 0): #end points
-		pub_end.publish(grid)
-	elif (typ == 1): #path points
-		pub_path.publish(grid)
 	
 
 # (Optional) If you need something to happen repeatedly at a fixed interval, write the code here.
@@ -203,6 +183,8 @@ if __name__ == '__main__':
 	global odom_list
 	global pub_end
 	global pub_path
+	global pub_visited
+	global pub_frontier
 	global grid
 	global oc
 	global updatedMap
@@ -219,6 +201,8 @@ if __name__ == '__main__':
 
 	pub_end = rospy.Publisher('/EndPoints', GridCells, queue_size=1)
 	pub_path = rospy.Publisher('/PathPoints', GridCells, queue_size=1)
+	pub_path = rospy.Publisher('/PathPoints', GridCells, queue_size=1)
+	pub_path = rospy.Publisher('/PathPoints', GridCells, queue_size=1)
 
 	nav_sub = rospy.Subscriber('/vanisamazing', PoseStamped, navToPose)
     # Use this object to get the robot's Odometry 
@@ -229,20 +213,17 @@ if __name__ == '__main__':
     # Use this command to make the program wait for some seconds
 	rospy.sleep(rospy.Duration(2, 0))
 
-	p1 = Point()
-	p1.x = 3
-	p1.y = 4
-	p2 = Point()
-	p2.x = 3
-	p2.y = 10
-	l = [p1, p2]
-	visitCells(l, 0)
+	#p1 = Point()
+	#p1.x = 3
+	#p1.y = 4
+	#p2 = Point()
+	#p2.x = 3
+	#p2.y = 10
+	#l = [p1, p2]
+	#visitCells(l, 0)
 	
 	while (not updatedMap):
 		1 + 1
-	r = Astar(p1, p2, oc, pub_end, pub_path)
+	r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier)
 	r.calculate()
-
-	print r.path
-	visitCells(r.path, 1)
 

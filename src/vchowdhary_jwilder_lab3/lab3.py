@@ -183,6 +183,8 @@ if __name__ == '__main__':
 	global odom_list
 	global pub_end
 	global pub_path
+	global pub_visited
+	global pub_frontier
 	global grid
 	global oc
 	global updatedMap
@@ -199,6 +201,8 @@ if __name__ == '__main__':
 
 	pub_end = rospy.Publisher('/EndPoints', GridCells, queue_size=1)
 	pub_path = rospy.Publisher('/PathPoints', GridCells, queue_size=1)
+	pub_visited = rospy.Publisher('/VisitedPoints', GridCells, queue_size=1)
+	pub_frontier = rospy.Publisher('/FrontierPoints', GridCells, queue_size=1)
 
 	nav_sub = rospy.Subscriber('/vanisamazing', PoseStamped, navToPose)
     # Use this object to get the robot's Odometry 
@@ -220,6 +224,6 @@ if __name__ == '__main__':
 	
 	while (not updatedMap):
 		1 + 1
-	r = Astar(p1, p2, oc, pub_end, pub_path)
+	r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier)
 	r.calculate()
 
