@@ -36,24 +36,24 @@ class Astar:
 			frontierList.remove(curr)
 			visited.add(curr)
 			curr.expand()
+			visitCells(visited, self.pub_visited)
 			print 'Current', curr.p.x, curr.p.y, cost, p
 			if (curr == self.goal):
 				self.path = path
 				break
 			for n in self.getAdjacent(curr):
 				prio = self.heuristic(n) + cost + self.costTo(curr, n)
-				if ((not n.visited) and (not self.isOccupied(n))):
+				if ((not self.isOccupied(n))):
 					a = [i for i in path]
 					a.append(n)
 					self.frontier.put((prio, (n, a, cost + self.costTo(curr, n))))
 					frontierList.append(n)
 			
 			visitCells(frontierList, self.pub_frontier)
-			visitCells(visited, self.pub_visited)
-
+			rospy.sleep(0.1)
 		print '-----------------------------'
 		#print visited
-		visitCells(visited, self.pub_visited)
+		#visitCells(visited, self.pub_visited)
 		visitCells(self.path, self.pub_path)		
 		print '-----------------------------'
 
