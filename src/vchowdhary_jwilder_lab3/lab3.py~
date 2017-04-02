@@ -171,6 +171,12 @@ def updateMap(oc_grid):
 	oc = oc_grid
 	updatedMap = True
 
+def c(n):
+	r = []
+	for i in range(len(n)):
+		r.append(n[i]/100)
+	return r
+
 # This is the program's main function
 if __name__ == '__main__':
     # Change this node name to include your username
@@ -218,14 +224,16 @@ if __name__ == '__main__':
 
 	p1 = Point()
 	p1.x = 4
-	p1.y = 4
+	p1.y = 5
 	p2 = Point()
-	p2.x = 6
-	p2.y = 11
+	p2.x = 14
+	p2.y = 22
 	l = [p1, p2]
+	
 	visitCells(l, pub_end)
-	print oc.data[int(p2.x + p2.y*oc.info.width)]
+	print oc.info.width, oc.data[int(p1.x + p1.y*oc.info.width)]
 	r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier)
-	#r.calculate()
+	r.calculate()
+
 
 	

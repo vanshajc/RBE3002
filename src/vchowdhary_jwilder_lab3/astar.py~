@@ -29,19 +29,17 @@ class Astar:
 			(p, (curr, path, cost)) = self.frontier.get()
 			frontierList.remove(curr)
 			visited.add(curr)
-			#print 'Current', curr, self.heuristic(curr), self.isOccupied(curr)
+			print 'Current', curr, cost
 			if (curr == self.goal):
 				print 'WE DID IT'
 				self.path = path
 				break
 			for n in self.getAdjacent(curr):
 				prio = self.heuristic(n) + cost + self.costTo(curr, n)
-				print 'Trying', n, n in visited, prio
 				if ((n not in visited) and self.within(n) and (not self.isOccupied(n))):
 					a = [i for i in path]
 					a.append(n)
 					self.frontier.put((prio, (n, a, cost + self.costTo(curr, n))))
-					print 'Adding to frontier', n				
 					frontierList.append(n)
 			
 			visitCells(frontierList, self.pub_frontier)
@@ -54,7 +52,7 @@ class Astar:
 		print '-----------------------------'
 
 	def within(self, n):
-		return n.x <= self.oc.info.resolution * self.oc.info.width * 4 and n.x >= 0 and n.y >= 0 and n.y <= self.oc.info.resolution * self.oc.info.width * 4
+		return n.x <= 37 and n.x >= 0 and n.y >= 0 and n.y <= 37
 
 	def heuristic(self, point):
 		return abs(self.goal.x - point.x) + abs(self.goal.y - point.y)
@@ -80,13 +78,13 @@ def visitCells(lofp, pub):
 	
 	grid = GridCells()
 	grid.header.frame_id = 'map'
-	grid.cell_width = 0.25
-	grid.cell_height = 0.25
+	grid.cell_width = 0.3
+	grid.cell_height = 0.3
 
 	for p in lofp:
 		point = Point()
-		point.x = p.x*0.5 - 0.25
-		point.y = p.y*0.5 - 0.25
+		point.x = p.x*0.3 + 0.65
+		point.y = p.y*0.3 + 0.15
 		grid.cells.append(point)
 
 	pub.publish(grid)

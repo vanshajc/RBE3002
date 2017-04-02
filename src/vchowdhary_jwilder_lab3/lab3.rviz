@@ -37,7 +37,7 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 0.5
-      Cell Size: 0.5
+      Cell Size: 0.3
       Class: rviz/Grid
       Color: 160; 160; 164
       Enabled: true
@@ -47,11 +47,11 @@ Visualization Manager:
       Name: Grid
       Normal Cell Count: 0
       Offset:
-        X: 6
-        Y: 6
+        X: 6.05
+        Y: 5.55
         Z: 0
       Plane: XY
-      Plane Cell Count: 40
+      Plane Cell Count: 37
       Reference Frame: <Fixed Frame>
       Value: true
     - Alpha: 1
@@ -131,19 +131,19 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 16.6404
+      Distance: 26.5334
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 2.90111
-        Y: 1.11581
-        Z: -1.42707
+        X: 4.56444
+        Y: 4.44083
+        Z: -1.80368
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 1.4548
+      Pitch: 1.4498
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
       Yaw: 1.5604
@@ -164,5 +164,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1615
-  X: 55
-  Y: -14
+  X: 65
+  Y: 24
