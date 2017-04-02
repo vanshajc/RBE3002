@@ -92,16 +92,16 @@ Visualization Manager:
       Name: PathPoints
       Topic: /PathPoints
       Value: true
-    - Alpha: 1
+    - Alpha: 0.1
       Class: rviz/GridCells
-      Color: 25; 255; 0
+      Color: 170; 85; 0
       Enabled: true
       Name: VisitedPoints
       Topic: /VisitedPoints
       Value: true
-    - Alpha: 1
+    - Alpha: 0.1
       Class: rviz/GridCells
-      Color: 25; 255; 0
+      Color: 170; 0; 0
       Enabled: true
       Name: FrontierPoints
       Topic: /FrontierPoints
@@ -130,22 +130,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 18.0184
+      Distance: 21.5813
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 4.88902
-        Y: 3.52858
-        Z: -2.06935
+        X: 5.53863
+        Y: 5.49468
+        Z: -2.19871
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 1.2804
+      Pitch: 1.5698
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.5904
+      Yaw: 1.5254
     Saved: ~
 Window Geometry:
   Displays:

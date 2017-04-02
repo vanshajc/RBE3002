@@ -213,13 +213,13 @@ if __name__ == '__main__':
     # Use this command to make the program wait for some seconds
 	rospy.sleep(rospy.Duration(2, 0))
 
-	#p1 = Point()
-	#p1.x = 3
-	#p1.y = 4
-	#p2 = Point()
-	#p2.x = 3
-	#p2.y = 10
-	#l = [p1, p2]
+	p1 = Point()
+	p1.x = 3
+	p1.y = 4
+	p2 = Point()
+	p2.x = 3
+	p2.y = 12
+	l = [p1, p2]
 	#visitCells(l, 0)
 	
 	while (not updatedMap):

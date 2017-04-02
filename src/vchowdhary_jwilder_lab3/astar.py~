@@ -1,7 +1,7 @@
 from Queue import PriorityQueue
 from geometry_msgs.msg import Point
 from nav_msgs.msg import GridCells
-
+import rospy
 
 class Astar:
 	def __init__(self, start, goal, oc, pub_end, pub_path, pub_visited, pub_frontier):
@@ -17,6 +17,7 @@ class Astar:
 		self.pub_frontier = pub_frontier
 
 		visitCells([start, goal], self.pub_end)
+		#print 'Resolution', oc.info.resolution*oc.info.width
 		
 
 	def calculate(self):
@@ -26,35 +27,37 @@ class Astar:
 
 		while (not self.frontier.empty()):
 			(p, (curr, path, cost)) = self.frontier.get()
-			frontierList.remove(self.start)
+			frontierList.remove(curr)
 
 			self.visited.append(curr)
-			print 'Current', curr, self.heuristic(curr)
+			#print 'Current', curr, self.heuristic(curr)
 			if (curr == self.goal):
 				print 'WE DID IT'
 				self.path = path
 				break
-
 			for n in self.getAdjacent(curr):
 				prio = self.heuristic(n) + cost + self.costTo(curr, n)
-				if (not n in self.visited):
+				if ((not n in self.visited) and self.within(n) and (not self.isOccupied(n))):
 					a = [i for i in path]
 					a.append(n)
 					self.frontier.put((prio, (n, a, cost + self.costTo(curr, n))))
 					frontierList.append(n)
-
+			print 'Publishing'
 			visitCells(frontierList, self.pub_frontier)
 			visitCells(self.visited, self.pub_visited)
+		#rospy.sleep(1)
 		print '-----------------------------'
 		print self.visited	
 
+	def within(self, n):
+		return n.x <= self.oc.info.resolution * self.oc.info.width * 2 and n.x >= 0 and n.y >= 0 and n.y <= self.oc.info.resolution * self.oc.info.width * 2
 
 	def heuristic(self, point):
 		return abs(self.goal.x - point.x) + abs(self.goal.y - point.y)
 
 	def costTo(self, s1, s2):
-		if (self.isOccupied(s2)):
-			return float('inf')
+		#if (self.isOccupied(s2) or self.isOccupied(s1)):
+		#	return float('inf')
 		return 1
 
 	def getAdjacent(self, s):
@@ -67,7 +70,7 @@ class Astar:
 		return p
 
 	def isOccupied(self, p):
-		return self.oc.data[int(p.x + p.y*self.oc.info.height)]
+		return self.oc.data[int(p.x + p.y*self.oc.info.height)] == 100
 
 def visitCells(lofp, pub):
 	
