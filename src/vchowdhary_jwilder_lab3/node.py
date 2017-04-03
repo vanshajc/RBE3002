@@ -5,6 +5,7 @@ class Node:
 		self.p.x = i
 		self.p.y = j
 		self.visited = False
+		self.cost = float('inf')
 
 	def expand(self):
 		self.visited = True
