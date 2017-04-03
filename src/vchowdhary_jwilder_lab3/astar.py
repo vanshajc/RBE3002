@@ -7,6 +7,7 @@ import rospy
 class Astar:
 	def __init__(self, start, goal, oc, pub_end, pub_path, pub_visited, pub_frontier):
 		self.start = Node(start.x, start.y)
+		self.start.cost = 0
 		self.goal = Node(goal.x, goal.y)
 		self.frontier = PriorityQueue()
 		self.path = []
@@ -26,27 +27,28 @@ class Astar:
 		
 
 	def calculate(self):
-		self.frontier.put((0, (self.start, [], 0)))
+		self.frontier.put((0, (self.start, [])))
 		frontierList = []
 		visited = set()
 		frontierList.append(self.start)		
 
 		while (not self.frontier.empty()):
-			(p, (curr, path, cost)) = self.frontier.get()
+			(p, (curr, path)) = self.frontier.get()
 			frontierList.remove(curr)
 			visited.add(curr)
 			curr.expand()
 			visitCells(visited, self.pub_visited)
-			print 'Current', curr.p.x, curr.p.y, cost, p
+			print 'Current', curr.p.x, curr.p.y, curr.cost, p
 			if (curr == self.goal):
 				self.path = path
 				break
 			for n in self.getAdjacent(curr):
-				prio = self.heuristic(n) + cost + self.costTo(curr, n)
-				if ((not self.isOccupied(n))):
+				prio = self.heuristic(n) + curr.cost + self.costTo(curr, n)
+				if ((not self.isOccupied(n)) and curr.cost + self.costTo(curr, n) < n.cost):
 					a = [i for i in path]
 					a.append(n)
-					self.frontier.put((prio, (n, a, cost + self.costTo(curr, n))))
+					n.cost = curr.cost + self.costTo(curr, n)
+					self.frontier.put((prio, (n, a)))
 					frontierList.append(n)
 			
 			visitCells(frontierList, self.pub_frontier)
