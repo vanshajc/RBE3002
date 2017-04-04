@@ -5,8 +5,10 @@ from node import *
 import rospy
 
 class Astar:
-	def __init__(self, start, goal, oc, pub_end, pub_path, pub_visited, pub_frontier):
+	def __init__(self, start, goal, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints):
+		print 'Initializing'
 		self.start = Node(start.x, start.y)
+		self.start.cost = 0
 		self.goal = Node(goal.x, goal.y)
 		self.frontier = PriorityQueue()
 		self.path = []
@@ -15,6 +17,8 @@ class Astar:
 		self.pub_path = pub_path
 		self.pub_visited = pub_visited
 		self.pub_frontier = pub_frontier
+		self.pub_waypoints = pub_waypoints
+
 
 		self.nodes = [[0 for x in range(37)] for y in range(37)] 
 		for i in range(37):
@@ -26,35 +30,41 @@ class Astar:
 		
 
 	def calculate(self):
-		self.frontier.put((0, (self.start, [], 0)))
+		print "Starting A*"
+		self.frontier.put((0, (self.start, [self.start])))
 		frontierList = []
 		visited = set()
 		frontierList.append(self.start)		
 
 		while (not self.frontier.empty()):
-			(p, (curr, path, cost)) = self.frontier.get()
+			(p, (curr, path)) = self.frontier.get()
 			frontierList.remove(curr)
 			visited.add(curr)
 			curr.expand()
 			visitCells(visited, self.pub_visited)
-			print 'Current', curr.p.x, curr.p.y, cost, p
+			print 'Current', curr.p.x, curr.p.y, curr.cost, p
 			if (curr == self.goal):
 				self.path = path
 				break
 			for n in self.getAdjacent(curr):
-				prio = self.heuristic(n) + cost + self.costTo(curr, n)
-				if ((not self.isOccupied(n))):
+				prio = self.heuristic(n) + curr.cost + self.costTo(curr, n)
+				if ((not self.isOccupied(n)) and curr.cost + self.costTo(curr, n) < n.cost):
 					a = [i for i in path]
 					a.append(n)
-					self.frontier.put((prio, (n, a, cost + self.costTo(curr, n))))
+					n.cost = curr.cost + self.costTo(curr, n)
+					self.frontier.put((prio, (n, a)))
 					frontierList.append(n)
 			
 			visitCells(frontierList, self.pub_frontier)
-			rospy.sleep(0.5)
+			#rospy.sleep(0.1)
 		print '-----------------------------'
 		#print visited
 		#visitCells(visited, self.pub_visited)
-		visitCells(self.path, self.pub_path)		
+		visitCells(self.path, self.pub_path)	
+		wp = findWaypoints(self.path);
+		visitCells(wp, self.pub_waypoints)	
+		visitCells([], self.pub_visited)
+		visitCells([], self.pub_frontier)
 		print '-----------------------------'
 
 	def within(self, n):
@@ -110,4 +120,20 @@ def visitCells(lofp, pub):
 		point.y = p.p.y*0.3 + 0.15
 		grid.cells.append(point)
 
+
 	pub.publish(grid)
+
+def findWaypoints(path):
+	wplist = []
+	i = 1
+	while i + 1 < len(path):
+		prev = path[i-1]
+		curr = path[i]
+		next = path[i+1]
+		print prev.p.x, curr.p.x, next.p.x, prev.p.y, curr.p.y, next.p.y
+		if prev.p.x != next.p.x and prev.p.y != next.p.y:
+			print "waypoint"
+			wplist.append(curr)
+		i += 1
+	return wplist
+

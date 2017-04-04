@@ -12,6 +12,7 @@ Panels:
         - /PathPoints1
         - /VisitedPoints1
         - /FrontierPoints1
+        - /Waypoints1
       Splitter Ratio: 0.5
     Tree Height: 745
   - Class: rviz/Selection
@@ -107,6 +108,13 @@ Visualization Manager:
       Name: FrontierPoints
       Topic: /FrontierPoints
       Value: true
+    - Alpha: 0.2
+      Class: rviz/GridCells
+      Color: 85; 170; 255
+      Enabled: true
+      Name: Waypoints
+      Topic: /Waypoints
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -138,15 +146,15 @@ Visualization Manager:
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 4.56444
-        Y: 4.44083
-        Z: -1.80368
+        X: 6.79928
+        Y: 5.10566
+        Z: -1.88734
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 1.4498
+      Pitch: 1.4348
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.5604
+      Yaw: 1.5854
     Saved: ~
 Window Geometry:
   Displays:
@@ -164,5 +172,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1615
-  X: 65
-  Y: 24
+  X: 55
+  Y: -14

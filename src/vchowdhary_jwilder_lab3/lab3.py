@@ -209,6 +209,7 @@ if __name__ == '__main__':
 	pub_path = rospy.Publisher('/PathPoints', GridCells, queue_size=10)
 	pub_visited = rospy.Publisher('/VisitedPoints', GridCells, queue_size=10)
 	pub_frontier = rospy.Publisher('/FrontierPoints', GridCells, queue_size=10)
+	pub_waypoints = rospy.Publisher('/Waypoints', GridCells, queue_size=10)
 
 	nav_sub = rospy.Subscriber('/vanisamazing', PoseStamped, navToPose)
     # Use this object to get the robot's Odometry 
@@ -221,16 +222,16 @@ if __name__ == '__main__':
 	
 	while (not updatedMap):
 		1 + 1
-
+	print 'HUH?'
 	p1 = Point()
 	p1.x = 4
 	p1.y = 15
 	p2 = Point()
-	p2.x = 30
-	p2.y = 35
+	p2.x = 8 # 30
+	p2.y = 15 # 35
 	
 	print oc.info.width, oc.data[int(p1.x + p1.y*oc.info.width)]
-	r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier)
+	r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
 	r.calculate()
 
 
