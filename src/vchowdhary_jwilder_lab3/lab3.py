@@ -225,10 +225,10 @@ if __name__ == '__main__':
 	print 'HUH?'
 	p1 = Point()
 	p1.x = 4
-	p1.y = 15
+	p1.y = 33
 	p2 = Point()
 	p2.x = 8 # 30
-	p2.y = 15 # 35
+	p2.y = 4 # 35
 	
 	print oc.info.width, oc.data[int(p1.x + p1.y*oc.info.width)]
 	r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
