@@ -1,2 +1,2 @@
-vchowdhary_lab2
--DCATKIN_DEVEL_PREFIX=/home/vchowdhary/rbe3002/devel -DCMAKE_INSTALL_PREFIX=/home/vchowdhary/rbe3002/install -G Unix Makefiles
+vchowdhary_jwilder_lab3:vchowdhary_jwilder_lab4:vchowdhary_lab2
+-DCATKIN_DEVEL_PREFIX=/home/vchowdhary/RBE3002/devel -DCMAKE_INSTALL_PREFIX=/home/vchowdhary/RBE3002/install -G Unix Makefiles

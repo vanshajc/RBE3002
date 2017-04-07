@@ -1,7 +1,7 @@
 prefix=/home/vchowdhary/RBE3002/install
 
-Name: vchowdhary_lab2
-Description: Description of vchowdhary_lab2
+Name: vchowdhary_jwilder_lab4
+Description: Description of vchowdhary_jwilder_lab4
 Version: 0.0.0
 Cflags: 
 Libs: -L/home/vchowdhary/RBE3002/install/lib 

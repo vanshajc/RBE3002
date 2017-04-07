@@ -7,4 +7,9 @@
 # new environment variables
 
 # modified environment variables
-export PWD="/home/vchowdhary/rbe3002/build"
+export CMAKE_PREFIX_PATH="/home/vchowdhary/RBE3002/devel:$CMAKE_PREFIX_PATH"
+export LD_LIBRARY_PATH="/home/vchowdhary/RBE3002/devel/lib:$LD_LIBRARY_PATH"
+export PKG_CONFIG_PATH="/home/vchowdhary/RBE3002/devel/lib/pkgconfig:$PKG_CONFIG_PATH"
+export PWD="/home/vchowdhary/RBE3002/build"
+export ROSLISP_PACKAGE_DIRECTORIES="/home/vchowdhary/RBE3002/devel/share/common-lisp"
+export ROS_PACKAGE_PATH="/home/vchowdhary/rbe3002/src:/home/vchowdhary/RBE3002/src:$ROS_PACKAGE_PATH"
