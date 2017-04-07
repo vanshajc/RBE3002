@@ -10,50 +10,36 @@ from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Point
 from tf.transformations import euler_from_quaternion
+from astar import *
+
+
+def nav(goal):
+	global pose
+	r = Astar(pose.pose.position, goal.pose.position, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
+	r.calculate()
 
 def drivePath(gridcells):
 	waypts = gridcells.cells
+	print 'Driving!', waypts	
 	for p in waypts:
 		navToPose(p)
 
 #drive to a goal subscribed as /move_base_simple/goal
 def navToPose(goal):
-	print 'Starting'
+	global pose
+	global oc
+
+	print 'Currently at', pose.pose.position.x, pose.pose.position.y
+	print 'Going to', goal.x, goal.y
 	rospy.sleep(0.1)	
 	diffX = goal.x - pose.pose.position.x
 	diffY = goal.y - pose.pose.position.y
-	print goal.x
-	print goal.y
-	print pose.pose.position.x
-	print pose.pose.position.y
 	print "Distance", diffX, diffY
-
-	print "Current:", pose.pose.position.x, pose.pose.position.y
-
-
 	rotate((math.degrees(math.atan2(diffY, diffX) - pose.pose.orientation.z))%360)
 
 	driveTo(math.sqrt(diffX**2 + diffY**2))
 
 	print "Finished"
-
-#This function accepts a speed and a distance for the robot to move in a straight line
-def driveStraight(speed, distance):
-	global pose
-	ix = pose.pose.position.x
-	iy = pose.pose.position.y
-	reached = False
-
-	while (not reached and not rospy.is_shutdown()):
-		cx = pose.pose.position.x - ix
-		cy = pose.pose.position.y - iy
-		cd = math.sqrt(cx **2 + cy **2)
-		if (cd >= distance):
-			reached = True
-			publishTwist(0, 0)
-		else:
-			publishTwist(speed, 0)
-			rospy.sleep(0.10)
 
 def toGlobal(angle):
 	if (angle <= 180 and angle >= 0):
@@ -68,6 +54,7 @@ def rotate(angle):
 	dest = ((angle) + toGlobal(math.degrees(pose.pose.orientation.z)))%360
 
 	while (not done and not rospy.is_shutdown()):
+		print 'Rotating'
 		#print "Current Angle", toGlobal(math.degrees(pose.pose.orientation.z))
 		error = (dest - toGlobal(math.degrees(pose.pose.orientation.z)))%360
 		e2 = (360 + toGlobal(math.degrees(pose.pose.orientation.z)) - dest)%360
@@ -80,7 +67,22 @@ def rotate(angle):
 
 	publishTwist(0, 0)
 
+def driveTo(distance):
+	global pose
+	ix = pose.pose.position.x
+	iy = pose.pose.position.y
+	reached = False
 
+	while (not reached and not rospy.is_shutdown()):
+		cx = pose.pose.position.x - ix
+		cy = pose.pose.position.y - iy
+		cd = math.sqrt(cx **2 + cy **2)
+		if (cd >= distance):
+			reached = True
+			publishTwist(0, 0)
+		else:
+			publishTwist((distance - cd)*5/distance, 0)
+			rospy.sleep(0.10)
 
 def publishTwist(linV, angV):
 	global pub
@@ -105,9 +107,17 @@ def timerCallback(event):
 	pose.pose.orientation.z = yaw
 
 
+def updateMap(oc_grid):
+	global oc
+	global updatedMap
+
+	print 'Retreived'
+	oc = oc_grid
+	updatedMap = True
+
 if __name__ == '__main__':
     # Change this node name to include your username
-	rospy.init_node('vchowdhary_jwilder_lab3')
+	rospy.init_node('vchowdhary_jwilder_lab4')
 
     # These are global variables. Write "global <variable_name>" in any other function to gain access to these global variables 
 	global pub
@@ -115,6 +125,8 @@ if __name__ == '__main__':
 	global odom_tf
 	global odom_list
 	global sub_waypoints
+	global map_sub
+	global oc
 
 	updatedMap = False
    
@@ -122,10 +134,10 @@ if __name__ == '__main__':
 
 	pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, None, queue_size=10) 
 # Publisher for commanding robot motion
-	bumper_sub = rospy.Subscriber('/mobile_base/events/bumper', BumperEvent, readBumper, queue_size=1) # Callback function to handle bumper events
+	map_sub = rospy.Subscriber('/map', OccupancyGrid, updateMap, queue_size=1)
 	sub_waypoints = rospy.Subscriber('/Waypoints', GridCells, drivePath, queue_size=10)
 
-	nav_sub = rospy.Subscriber('/vanisamazing', PoseStamped, navToPose)
+	nav_sub = rospy.Subscriber('/vanisamazing', PoseStamped, nav)
     # Use this object to get the robot's Odometry 
 	#make the robot keep doing something...
 	rospy.Timer(rospy.Duration(0.01), timerCallback)
@@ -133,4 +145,7 @@ if __name__ == '__main__':
 	odom_list = tf.TransformListener()
     # Use this command to make the program wait for some seconds
 	rospy.sleep(rospy.Duration(2, 0))
+	print 'Started'
+	while(1):
+		rospy.sleep(0.1)
 	

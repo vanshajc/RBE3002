@@ -3,7 +3,6 @@ from geometry_msgs.msg import Point
 from nav_msgs.msg import GridCells
 from node import *
 import rospy
-import math
 
 class Astar:
 	def __init__(self, start, goal, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints):

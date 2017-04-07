@@ -224,8 +224,8 @@ if __name__ == '__main__':
 		1 + 1
 	print 'HUH?'
 	p1 = Point()
-	p1.x = int(pose.pose.position.x / oc.info.resolution)
-	p1.y = int(pose.pose.position.y / oc.info.resolution)
+	p1.x = int(pose.pose.position.x)
+	p1.y = int(pose.pose.position.y)
 	p2 = Point()
 	p2.x = 4 # 30
 	p2.y = 30 # 35
