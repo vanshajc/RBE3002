@@ -10,8 +10,9 @@ Panels:
         - /TF1/Frames1
         - /TF1/Tree1
         - /Map1
+        - /Map1/Position1
+        - /Map1/Orientation1
         - /Global Planning1/Planner1
-        - /FrontierPoints1
       Splitter Ratio: 0.5
     Tree Height: 813
   - Class: rviz/Selection
@@ -46,11 +47,11 @@ Visualization Manager:
       Name: Grid
       Normal Cell Count: 0
       Offset:
-        X: 6.05
-        Y: 5.55
+        X: 0
+        Y: 0
         Z: 0
       Plane: XY
-      Plane Cell Count: 37
+      Plane Cell Count: 50
       Reference Frame: <Fixed Frame>
       Value: true
     - Alpha: 1
@@ -553,25 +554,25 @@ Visualization Manager:
     - Alpha: 0.5
       Class: rviz/GridCells
       Color: 68; 12; 255
-      Enabled: false
+      Enabled: true
       Name: PathPoints
       Topic: /PathPoints
-      Value: false
+      Value: true
     - Alpha: 0.6
       Class: rviz/GridCells
       Color: 0; 170; 255
-      Enabled: false
+      Enabled: true
       Name: WayPoints
       Topic: /Waypoints
-      Value: false
+      Value: true
     - Alpha: 0.1
       Class: rviz/GridCells
       Color: 255; 170; 0
-      Enabled: false
+      Enabled: true
       Name: VisitedPoints
       Topic: /VisitedPoints
-      Value: false
-    - Alpha: 1
+      Value: true
+    - Alpha: 0.1
       Class: rviz/GridCells
       Color: 170; 0; 0
       Enabled: true
@@ -581,10 +582,10 @@ Visualization Manager:
     - Alpha: 0.5
       Class: rviz/GridCells
       Color: 25; 255; 0
-      Enabled: false
+      Enabled: true
       Name: EndPoints
       Topic: /EndPoints
-      Value: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -605,22 +606,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 10.044
+      Distance: 35.6004
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.06393
-        Y: 0.665762
-        Z: -0.0446778
+        X: 2.09103
+        Y: 0.415565
+        Z: -0.366516
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 1.5548
+      Pitch: 1.5498
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 0.0150319
+      Yaw: 0.0100243
     Saved: ~
 Window Geometry:
   Displays:

@@ -150,9 +150,11 @@ def publishTwist(linV, angV):
 #   rospy.Timer(rospy.Duration(.01), timerCallback)
 def timerCallback(event):
 	global pose
-	#print "timercallback"
-	odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
-	(position, orientation) = odom_list.lookupTransform('map','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
+	global updatedPose
+
+	updatedPose = True
+	odom_list.waitForTransform('/map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
+	(position, orientation) = odom_list.lookupTransform('/map','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
 	pose.pose.position.x = position[0]
 	pose.pose.position.y = position[1]
 
@@ -194,9 +196,10 @@ if __name__ == '__main__':
 	global grid
 	global oc
 	global updatedMap
+	global updatedPose
 
 	updatedMap = False
-   
+   	updatedPose = False
 	pose = PoseStamped()
 
 	pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, None, queue_size=10) 
@@ -220,19 +223,28 @@ if __name__ == '__main__':
     # Use this command to make the program wait for some seconds
 	rospy.sleep(rospy.Duration(2, 0))
 	
-	while (not updatedMap):
+	while (not updatedMap or not updatedPose):
 		1 + 1
 	print 'HUH?'
 	p1 = Point()
-	p1.x = int(pose.pose.position.x)
-	p1.y = int(pose.pose.position.y)
+	p1.x = int((pose.pose.position.x / 0.3))
+	p1.y = int((pose.pose.position.y/ 0.3))
+	print 'Currently at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
 	p2 = Point()
-	p2.x = 4 # 30
-	p2.y = 30 # 35
+	p2.x = 11 # 30
+	p2.y = 8 # 35
 	
-	print oc.info.width, oc.data[int(p1.x + p1.y*oc.info.width)]
+	print oc.info.width, oc.data[int(p1.x + p1.y*oc.info.width)], len(oc.data), oc.info.resolution
+	for i in range(len(oc.data)):
+		if (oc.data[i] != -1):
+			print i, oc.data[i]
+	print '--------------'
 	r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
-	r.calculate()
+	p3 = Point()
+	p3.x = 11
+	p3.y = 8
+	print 'occupied?', r.isOccupied(p3)
+	#r.calculate()
 
 
 	

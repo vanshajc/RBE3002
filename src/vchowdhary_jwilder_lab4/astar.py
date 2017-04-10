@@ -49,14 +49,14 @@ class Astar:
 				break
 			for n in self.getAdjacent(curr):
 				prio = self.heuristic(n) + curr.cost + self.costTo(curr, n)
-				if ((not self.isOccupied(n)) and curr.cost + self.costTo(curr, n) < n.cost):
+				if ((not self.isOccupied(n.p)) and curr.cost + self.costTo(curr, n) < n.cost):
 					a = [i for i in path]
 					a.append(n)
 					n.cost = curr.cost + self.costTo(curr, n)
 					self.frontier.put((prio, (n, a)))
 					frontierList.append(n)
 			
-			visitCells(frontierList, self.pub_frontier)
+			#visitCells(frontierList, self.pub_frontier)
 			#rospy.sleep(0.1)
 		print '-----------------------------'
 		#print visited
@@ -65,7 +65,7 @@ class Astar:
 		wp = self.findWaypoints(self.path);
 		visitCells(wp, self.pub_waypoints)	
 		visitCells([], self.pub_visited)
-		visitCells([], self.pub_frontier)
+		#visitCells([], self.pub_frontier)
 		print '-----------------------------'
 
 	def within(self, n):
@@ -101,12 +101,29 @@ class Astar:
 		#p = Point()
 		#p.x = x;
 		#p.y = y;
-		if (x < 37 and x >= 0 and y >= 0 and y < 37):
+		#if (x < 37 and x >= 0 and y >= 0 and y < 37):
+		if (abs(x) < self.oc.info.width and abs(y) < self.oc.info.height):
 			return self.nodes[x][y]
 		return -1
 
 	def isOccupied(self, p):
-		return self.oc.data[int(p.p.x + p.p.y*self.oc.info.height)] == 100
+		a = []
+		for i in range(int(0.3/self.oc.info.resolution)+1):
+			x = i + (p.x)*0.3/self.oc.info.resolution
+			x2 = 289
+			for j in range(int(0.3/self.oc.info.resolution)+1):
+				y = j + (p.y)*0.3/self.oc.info.resolution
+				y2 = 343
+				pp = Point()
+				pp.x = x
+				pp.y = y				
+				a.append(pp)
+				print 'Checking:',x,y, self.oc.data[int(x+y*self.oc.info.width)]
+				if self.oc.data[int(x + y*self.oc.info.width)] == 100:
+					return True		
+		visit(a, self.pub_frontier)		
+		return False
+		#return self.oc.data[int(p.p.x + p.p.y*self.oc.info.height)] == 100
 
 	def findWaypoints(self, path):
 		wplist = []
@@ -118,9 +135,8 @@ class Astar:
 			print prev.p.x, curr.p.x, next.p.x, prev.p.y, curr.p.y, next.p.y
 			if prev.p.x != next.p.x and prev.p.y != next.p.y:
 				print "waypoint"
-				i +=1
 				wplist.append(curr)
-			i += 1
+			i +=1
 		wplist.append(self.goal)
 		return wplist
 
@@ -133,10 +149,25 @@ def visitCells(lofp, pub):
 
 	for p in lofp:
 		point = Point()
-		point.x = p.p.x*0.3 + 0.65
+		point.x = p.p.x*0.3 + 0.05
 		point.y = p.p.y*0.3 + 0.15
 		grid.cells.append(point)
 
+
+	pub.publish(grid)
+
+def visit(lofp, pub):
+	
+	grid = GridCells()
+	grid.header.frame_id = 'map'
+	grid.cell_width = 0.075
+	grid.cell_height = 0.075
+	
+	for p in lofp:
+		point = Point()
+		point.x = (p.x)*0.075 - 0.05 - 15
+		point.y = (p.y)*0.075 + 0.05 - 15
+		grid.cells.append(point)
 
 	pub.publish(grid)
 
