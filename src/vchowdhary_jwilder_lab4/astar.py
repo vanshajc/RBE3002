@@ -108,10 +108,10 @@ class Astar:
 
 	def isOccupied(self, p):
 		a = []
-		for i in range(int(0.3/self.oc.info.resolution)+1):
+		for i in range(round(0.3/self.oc.info.resolution)):
 			x = round(i + (p.x)*(0.3/self.oc.info.resolution))
 			x2 = 289
-			for j in range(int(0.3/self.oc.info.resolution)+1):
+			for j in range(round(0.3/self.oc.info.resolution)):
 				y = round(j + (p.y)*(0.3/self.oc.info.resolution))
 				y2 = 343
 				pp = Point()

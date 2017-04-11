@@ -42,7 +42,7 @@ class Astar:
 			frontierList.remove(curr)
 			visited.add(curr)
 			curr.expand()
-			visitCells(visited, self.pub_visited)
+			visitCells(visited, self.pub_visited, self.oc)
 			#print 'Current', curr.p.x, curr.p.y, curr.cost, p
 			if (curr == self.goal):
 				self.path = path
