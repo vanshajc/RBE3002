@@ -80,7 +80,7 @@ def driveTo(distance):
 		cx = pose.pose.position.x - ix
 		cy = pose.pose.position.y - iy
 		cd = math.sqrt(cx **2 + cy **2)
-		if (cd >= distance):
+		if (abs(cd - distance) < 0.1):
 			reached = True
 			publishTwist(0, 0)
 		else:

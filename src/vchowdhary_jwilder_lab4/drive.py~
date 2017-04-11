@@ -97,8 +97,8 @@ def publishTwist(linV, angV):
 def timerCallback(event):
 	global pose
 	#print "timercallback"
-	odom_list.waitForTransform('odom', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
-	(position, orientation) = odom_list.lookupTransform('odom','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
+	odom_list.waitForTransform('/map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
+	(position, orientation) = odom_list.lookupTransform('/map','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
 	pose.pose.position.x = position[0]
 	pose.pose.position.y = position[1]
 

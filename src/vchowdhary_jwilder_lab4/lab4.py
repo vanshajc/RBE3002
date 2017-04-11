@@ -12,6 +12,35 @@ from geometry_msgs.msg import Point
 from tf.transformations import euler_from_quaternion
 from astar import *
 
+
+def padding():
+	global oc
+	noc = [0] * len(oc.data)
+	# NOTE: THIS NEEDS TO CHANGE
+	for i in range(oc.info.width):
+		for j in range(oc.info.height):
+			print 'checking'
+			if (oc.data[i + j * oc.info.width] == 100):
+				noc = addAround(noc, i, j)
+				noc = addAround(noc, i - 1, j)
+				noc = addAround(noc, i + 1, j)
+				noc = addAround(noc, i, j + 1)
+				noc = addAround(noc, i, j - 1)
+				noc = addAround(noc, i + 1, j + 1)
+				noc = addAround(noc, i - 1, j + 1)
+				noc = addAround(noc, i + 1, j - 1)
+				noc = addAround(noc, i - 1, j - 1)
+
+	return noc
+
+
+def addAround(n, i, j):
+	global oc
+	if (i < 0 or j < 0 or i >= oc.info.width or j >= oc.info.height):
+		return n
+	n[i + j*oc.info.width] = 100
+	return n
+
 #drive to a goal subscribed as /move_base_simple/goal
 def navToPose(goal):
 	print 'Starting'
@@ -151,12 +180,17 @@ def publishTwist(linV, angV):
 def timerCallback(event):
 	global pose
 	global updatedPose
+	global updatedMap
+	global oc
 
 	updatedPose = True
 	odom_list.waitForTransform('/map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
 	(position, orientation) = odom_list.lookupTransform('/map','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
-	pose.pose.position.x = position[0]
-	pose.pose.position.y = position[1]
+	while (not updatedMap):
+		1 + 1
+	#print 'ORIGIN IS', oc.info.origin.position.x
+	pose.pose.position.x = position[0] - oc.info.origin.position.x
+	pose.pose.position.y = position[1] - oc.info.origin.position.y
 
 	odomW = orientation
 
@@ -231,20 +265,23 @@ if __name__ == '__main__':
 	p1.y = int((pose.pose.position.y/ 0.3))
 	print 'Currently at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
 	p2 = Point()
-	p2.x = 11 # 30
-	p2.y = 8 # 35
+	p2.x = 16 # 30
+	p2.y = 28 # 35
 	
 	print oc.info.width, oc.data[int(p1.x + p1.y*oc.info.width)], len(oc.data), oc.info.resolution
 	for i in range(len(oc.data)):
 		if (oc.data[i] != -1):
 			print i%oc.info.width, i/oc.info.width, oc.data[i]
 	print '--------------'
+	oc.data = padding()
 	r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
 	p3 = Point()
 	p3.x = 11
 	p3.y = 8
-	print 'occupied?', r.isOccupied(p3)
-	#r.calculate()
+	print 'occupied?', r.isOccupied(p2)
+	print 'origin', oc.info.origin.position.x
+	print 'robot at', p1.x, p1.y
+	r.calculate()
 
 
 	

@@ -26,7 +26,7 @@ class Astar:
 			for j in range(37):
 				self.nodes[i][j] = Node(i, j)
 
-		visitCells([self.start, self.goal], self.pub_end)
+		visitCells([self.start, self.goal], self.pub_end, self.oc)
 		#print 'Resolution', oc.info.resolution*oc.info.width
 		
 
@@ -42,8 +42,8 @@ class Astar:
 			frontierList.remove(curr)
 			visited.add(curr)
 			curr.expand()
-			visitCells(visited, self.pub_visited)
-			print 'Current', curr.p.x, curr.p.y, curr.cost, p
+			visitCells(visited, self.pub_visited, self.oc)
+			#print 'Current', curr.p.x, curr.p.y, curr.cost, p
 			if (curr == self.goal):
 				self.path = path
 				break
@@ -61,10 +61,10 @@ class Astar:
 		print '-----------------------------'
 		#print visited
 		#visitCells(visited, self.pub_visited)
-		visitCells(self.path, self.pub_path)	
+		visitCells(self.path, self.pub_path, self.oc)	
 		wp = self.findWaypoints(self.path);
-		visitCells(wp, self.pub_waypoints)	
-		visitCells([], self.pub_visited)
+		visitCells(wp, self.pub_waypoints, self.oc)	
+		visitCells([], self.pub_visited, self.oc)
 		#visitCells([], self.pub_frontier)
 		print '-----------------------------'
 
@@ -109,10 +109,10 @@ class Astar:
 	def isOccupied(self, p):
 		a = []
 		for i in range(int(0.3/self.oc.info.resolution)+1):
-			x = i + (p.x)*0.3/self.oc.info.resolution
+			x = round(i + (p.x)*(0.3/self.oc.info.resolution))
 			x2 = 289
 			for j in range(int(0.3/self.oc.info.resolution)+1):
-				y = j + (p.y)*0.3/self.oc.info.resolution
+				y = round(j + (p.y)*(0.3/self.oc.info.resolution))
 				y2 = 343
 				pp = Point()
 				pp.x = x
@@ -140,7 +140,7 @@ class Astar:
 		wplist.append(self.goal)
 		return wplist
 
-def visitCells(lofp, pub):
+def visitCells(lofp, pub, oc):
 	
 	grid = GridCells()
 	grid.header.frame_id = 'map'
@@ -149,8 +149,8 @@ def visitCells(lofp, pub):
 
 	for p in lofp:
 		point = Point()
-		point.x = p.p.x*0.3 + 0.05
-		point.y = p.p.y*0.3 + 0.15
+		point.x = p.p.x*0.3 + 0.15 + oc.info.origin.position.x
+		point.y = p.p.y*0.3 + 0.15 + oc.info.origin.position.y
 		grid.cells.append(point)
 
 
