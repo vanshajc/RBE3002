@@ -16,9 +16,10 @@ from astar import *
 def padding():
 	global oc
 	noc = [0] * len(oc.data)
+	# NOTE: THIS NEEDS TO CHANGE
 	for i in range(oc.info.width):
 		for j in range(oc.info.height):
-			print 'checking'
+			#print 'checking'
 			if (oc.data[i + j * oc.info.width] == 100):
 				noc = addAround(noc, i, j)
 				noc = addAround(noc, i - 1, j)
@@ -181,6 +182,7 @@ def timerCallback(event):
 	global updatedPose
 	global updatedMap
 	global oc
+	global pub_pose
 
 	updatedPose = True
 	odom_list.waitForTransform('/map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
@@ -197,6 +199,10 @@ def timerCallback(event):
 	roll, pitch, yaw = euler_from_quaternion(q)
 	
 	pose.pose.orientation.z = yaw
+
+
+	#pub_pose.publish(pose)
+
 
 def updateMap(oc_grid):
 	global oc
@@ -226,6 +232,7 @@ if __name__ == '__main__':
 	global pub_path
 	global pub_visited
 	global pub_frontier
+	global pub_pose
 	global grid
 	global oc
 	global updatedMap
@@ -246,6 +253,7 @@ if __name__ == '__main__':
 	pub_visited = rospy.Publisher('/VisitedPoints', GridCells, queue_size=10)
 	pub_frontier = rospy.Publisher('/FrontierPoints', GridCells, queue_size=10)
 	pub_waypoints = rospy.Publisher('/Waypoints', GridCells, queue_size=10)
+	pub_pose = rospy.Publisher('/lab4_pose', PoseStamped, queue_size=10)
 
 	nav_sub = rospy.Subscriber('/vanisamazing', PoseStamped, navToPose)
     # Use this object to get the robot's Odometry 
@@ -257,29 +265,30 @@ if __name__ == '__main__':
 	rospy.sleep(rospy.Duration(2, 0))
 	
 	while (not updatedMap or not updatedPose):
-		1 + 1
+		print 'stuck'
+		rospy.sleep(1)
 	print 'HUH?'
 	p1 = Point()
 	p1.x = int((pose.pose.position.x / 0.3))
 	p1.y = int((pose.pose.position.y/ 0.3))
 	print 'Currently at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
 	p2 = Point()
-	p2.x = 16 # 30
-	p2.y = 28 # 35
+	p2.x = p1.x + 1# 30
+	p2.y = p1.y # 35
 	
 	print oc.info.width, oc.data[int(p1.x + p1.y*oc.info.width)], len(oc.data), oc.info.resolution
 	for i in range(len(oc.data)):
 		if (oc.data[i] != -1):
 			print i%oc.info.width, i/oc.info.width, oc.data[i]
 	print '--------------'
-	oc.data = padding()
+	#oc.data = padding()
+
 	r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
-	p3 = Point()
-	p3.x = 11
-	p3.y = 8
+
+
 	print 'occupied?', r.isOccupied(p2)
-	print 'origin', oc.info.origin.position.x
-	print 'robot at', p1.x, p1.y
+	print 'origin', oc.info.origin.position.x, oc.info.origin.position.y
+	print 'robot at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
 	r.calculate()
 
 

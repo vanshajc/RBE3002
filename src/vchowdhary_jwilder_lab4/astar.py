@@ -21,9 +21,9 @@ class Astar:
 		self.pub_waypoints = pub_waypoints
 
 
-		self.nodes = [[0 for x in range(37)] for y in range(37)] 
-		for i in range(37):
-			for j in range(37):
+		self.nodes = [[0 for x in range(self.oc.info.height)] for y in range(self.oc.info.width)] 
+		for i in range(self.oc.info.width):
+			for j in range(self.oc.info.height):
 				self.nodes[i][j] = Node(i, j)
 
 		visitCells([self.start, self.goal], self.pub_end, self.oc)
@@ -108,17 +108,17 @@ class Astar:
 
 	def isOccupied(self, p):
 		a = []
-		for i in range(round(0.3/self.oc.info.resolution)):
+		for i in range(int(round(0.3/self.oc.info.resolution))):
 			x = round(i + (p.x)*(0.3/self.oc.info.resolution))
 			x2 = 289
-			for j in range(round(0.3/self.oc.info.resolution)):
+			for j in range(int(round(0.3/self.oc.info.resolution))):
 				y = round(j + (p.y)*(0.3/self.oc.info.resolution))
 				y2 = 343
 				pp = Point()
 				pp.x = x
 				pp.y = y				
 				a.append(pp)
-				print 'Checking:',x,y, self.oc.data[int(x+y*self.oc.info.width)]
+				#print 'Checking:',x,y, self.oc.data[int(x+y*self.oc.info.width)]
 				if self.oc.data[int(x + y*self.oc.info.width)] == 100:
 					return True		
 		visit(a, self.pub_frontier)		

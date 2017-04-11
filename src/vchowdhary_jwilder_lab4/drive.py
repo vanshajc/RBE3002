@@ -63,9 +63,9 @@ def rotate(angle):
 		e2 = (360 + toGlobal(math.degrees(pose.pose.orientation.z)) - dest)%360
 		if (abs(e2) < abs(error)):
 			error = -1*e2
-		if (abs(error) < 0.1):
+		if (abs(error) < 1):
 			done = True
-		publishTwist(0, 1.5 * error/90)
+		publishTwist(0, (1.5 * error/90) + 0.3*(error/abs(error)))
 		rospy.sleep(0.01)
 
 	publishTwist(0, 0)
@@ -84,7 +84,7 @@ def driveTo(distance):
 			reached = True
 			publishTwist(0, 0)
 		else:
-			publishTwist((distance - cd)*0.75/distance + 0.1, 0)
+			publishTwist((distance - cd)*0.1/distance + 0.1, 0)
 			rospy.sleep(0.01)
 
 def publishTwist(linV, angV):
