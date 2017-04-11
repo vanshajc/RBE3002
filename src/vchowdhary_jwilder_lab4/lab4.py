@@ -20,6 +20,8 @@ def padding():
 	for i in range(oc.info.width):
 		for j in range(oc.info.height):
 			#print 'checking'
+			if (oc.data[i + j * oc.info.width] == -1):
+				noc[i + j * oc.info.width] == -1
 			if (oc.data[i + j * oc.info.width] == 100):
 				noc = addAround(noc, i, j)
 				noc = addAround(noc, i - 1, j)
@@ -218,6 +220,34 @@ def c(n):
 		r.append(n[i]/100)
 	return r
 
+def goToGoal(g):
+	global oc
+	global pose
+	global pub_end
+	global pub_path
+	global pub_visited
+	global pub_frontier
+	global pub_waypoints
+
+	print 'HUH?'
+	p1 = Point()
+	p1.x = int((pose.pose.position.x / 0.3))
+	p1.y = int((pose.pose.position.y/ 0.3))
+	print 'Currently at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
+	p2 = Point()
+	print 'goal at', g.pose.position.x - oc.info.origin.position.x, g.pose.position.y - oc.info.origin.position.y 
+	p2.x = int((g.pose.position.x - oc.info.origin.position.x)/0.3) # 30
+	p2.y = int((g.pose.position.y - oc.info.origin.position.y)/0.3) # 35
+	
+	oc.data = padding()
+	r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
+
+	print 'occupied?', r.isOccupied(p2)
+	print 'origin', oc.info.origin.position.x, oc.info.origin.position.y
+	print 'robot at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
+	r.calculate()
+	
+
 # This is the program's main function
 if __name__ == '__main__':
     # Change this node name to include your username
@@ -255,6 +285,7 @@ if __name__ == '__main__':
 	pub_waypoints = rospy.Publisher('/Waypoints', GridCells, queue_size=10)
 	pub_pose = rospy.Publisher('/lab4_pose', PoseStamped, queue_size=10)
 
+	sub_goal = rospy.Subscriber('/GoalPoint', PoseStamped, goToGoal)
 	nav_sub = rospy.Subscriber('/vanisamazing', PoseStamped, navToPose)
     # Use this object to get the robot's Odometry 
 	#make the robot keep doing something...
@@ -273,23 +304,26 @@ if __name__ == '__main__':
 	p1.y = int((pose.pose.position.y/ 0.3))
 	print 'Currently at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
 	p2 = Point()
-	p2.x = p1.x + 1 # 30
-	p2.y = p1.y # 35
+	p2.x = p1.x + 5 # 30
+	p2.y = p1.y + 1 # 35
 	
 	print oc.info.width, oc.data[int(p1.x + p1.y*oc.info.width)], len(oc.data), oc.info.resolution
 	for i in range(len(oc.data)):
 		if (oc.data[i] != -1):
 			print i%oc.info.width, i/oc.info.width, oc.data[i]
 	print '--------------'
+	
+	while (1):
+		rospy.sleep(0.1)
 	#oc.data = padding()
 
-	r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
+	#r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
 
 
-	print 'occupied?', r.isOccupied(p2)
-	print 'origin', oc.info.origin.position.x, oc.info.origin.position.y
-	print 'robot at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
-	r.calculate()
+	#print 'occupied?', r.isOccupied(p2)
+	#print 'origin', oc.info.origin.position.x, oc.info.origin.position.y
+	#print 'robot at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
+	#r.calculate()
 
 
 	

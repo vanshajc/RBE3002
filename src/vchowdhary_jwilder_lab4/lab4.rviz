@@ -567,17 +567,17 @@ Visualization Manager:
     - Alpha: 0.1
       Class: rviz/GridCells
       Color: 255; 170; 0
-      Enabled: true
+      Enabled: false
       Name: VisitedPoints
       Topic: /VisitedPoints
-      Value: true
+      Value: false
     - Alpha: 1
       Class: rviz/GridCells
       Color: 170; 0; 0
-      Enabled: true
+      Enabled: false
       Name: FrontierPoints
       Topic: /FrontierPoints
-      Value: true
+      Value: false
     - Alpha: 0.5
       Class: rviz/GridCells
       Color: 25; 255; 0
@@ -599,28 +599,28 @@ Visualization Manager:
     - Class: rviz/SetInitialPose
       Topic: /initialpose
     - Class: rviz/SetGoal
-      Topic: /move_base_simple/goal
+      Topic: /GoalPoint
     - Class: rviz/Measure
   Value: true
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 65.5031
+      Distance: 10.9419
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.67956
-        Y: 3.18073
-        Z: 0.232539
+        X: -3.83963
+        Y: -0.971325
+        Z: 0.446892
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 1.5648
+      Pitch: 1.5298
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 6.26827
+      Yaw: 6.26327
     Saved: ~
 Window Geometry:
   Displays:
@@ -638,5 +638,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1615
-  X: 65
-  Y: 24
+  X: 55
+  Y: -14
