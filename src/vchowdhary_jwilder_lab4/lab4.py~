@@ -48,37 +48,6 @@ def addAround(n, i, j):
 	n[i + j*oc.info.width] = 100
 	return n
 
-	
-
-# (Optional) If you need something to happen repeatedly at a fixed interval, write the code here.
-# Start the timer with the following line of code: 
-#   rospy.Timer(rospy.Duration(.01), timerCallback)
-def timerCallback(event):
-	global pose
-	global updatedPose
-	global updatedMap
-	global oc
-	global pub_pose
-
-	updatedPose = True
-	odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(2.0))
-	(position, orientation) = odom_list.lookupTransform('map','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
-	while (not updatedMap):
-		1 + 1
-	#print 'ORIGIN IS', oc.info.origin.position.x
-	pose.pose.position.x = position[0] - oc.info.origin.position.x
-	pose.pose.position.y = position[1] - oc.info.origin.position.y
-
-	odomW = orientation
-
-	q = [odomW[0], odomW[1], odomW[2], odomW[3]]
-	roll, pitch, yaw = euler_from_quaternion(q)
-	
-	pose.pose.orientation.z = yaw
-
-
-	#pub_pose.publish(pose)
-
 
 def updateMap(oc_grid):
 	global oc
@@ -161,7 +130,6 @@ def replan(e):
 	print 'occupied?', r.isOccupied(p2)
 	print 'origin', oc.info.origin.position.x, oc.info.origin.position.y
 	print 'robot at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
-	print 'Poitns:', p1.x, p1.y, p2.x, p2.y
 	r.calculate()
 	
 	
@@ -226,18 +194,29 @@ if __name__ == '__main__':
 	sub_way = rospy.Subscriber('/WayReached', Point, replan)
 
 	sub_goal = rospy.Subscriber('/GoalPoint', PoseStamped, goToGoal)
-    # Use this object to get the robot's Odometry 
-	#make the robot keep doing something...
-	rospy.Timer(rospy.Duration(0.01), timerCallback)
-	#rospy.Timer(rospy.Duration(1), replan)
 
 	odom_list = tf.TransformListener()
     # Use this command to make the program wait for some seconds
 	rospy.sleep(rospy.Duration(2, 0))
 	
-	while (not updatedMap or not updatedPose):
+	while (not updatedMap and not rospy.is_shutdown()):
 		print 'stuck'
 		rospy.sleep(1)
+
+	odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(2.0))
+	(position, orientation) = odom_list.lookupTransform('map','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
+
+	#print 'ORIGIN IS', oc.info.origin.position.x
+	pose.pose.position.x = position[0] - oc.info.origin.position.x
+	pose.pose.position.y = position[1] - oc.info.origin.position.y
+
+	odomW = orientation
+
+	q = [odomW[0], odomW[1], odomW[2], odomW[3]]
+	roll, pitch, yaw = euler_from_quaternion(q)
+	
+	pose.pose.orientation.z = yaw
+
 	print 'HUH?'
 
 	p1.x = int((pose.pose.position.x / 0.3))
@@ -247,8 +226,8 @@ if __name__ == '__main__':
 	print oc.info.width, oc.data[int(p1.x + p1.y*oc.info.width)], len(oc.data), oc.info.resolution
 
 	# while ros_not_shutdown
-	#while (1):
-	rospy.sleep(10000)
+	while (not rospy.is_shutdown()):
+		rospy.sleep(1)
 	#oc.data = padding()
 
 	#r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)

@@ -126,7 +126,7 @@ def updateMap(oc_grid):
 
 if __name__ == '__main__':
     # Change this node name to include your username
-	rospy.init_node('vchowdhary_jwilder_lab4')
+	rospy.init_node('vchowdhary_jwilder_Drive')
 
     # These are global variables. Write "global <variable_name>" in any other function to gain access to these global variables 
 	global pub
