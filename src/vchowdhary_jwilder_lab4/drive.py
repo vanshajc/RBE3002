@@ -10,13 +10,6 @@ from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Point
 from tf.transformations import euler_from_quaternion
-from astar import *
-
-
-def nav(goal):
-	global pose
-	r = Astar(pose.pose.position, goal.pose.position, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
-	r.calculate()
 
 def drivePath(gridcells):
 	global pub_way
