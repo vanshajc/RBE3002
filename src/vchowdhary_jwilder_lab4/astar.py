@@ -48,11 +48,11 @@ class Astar:
 				self.path = path
 				break
 			for n in self.getAdjacent(curr):
-				prio = self.heuristic(n) + curr.cost + self.costTo(curr, n)
-				if ((not self.isOccupied(n.p)) and curr.cost + self.costTo(curr, n) < n.cost):
+				prio = self.heuristic(n) + curr.cost + self.costTo(curr, n, path)
+				if ((not self.isOccupied(n.p)) and curr.cost + self.costTo(curr, n, path) < n.cost):
 					a = [i for i in path]
 					a.append(n)
-					n.cost = curr.cost + self.costTo(curr, n)
+					n.cost = curr.cost + self.costTo(curr, n, path)
 					self.frontier.put((prio, (n, a)))
 					frontierList.append(n)
 			
@@ -74,9 +74,14 @@ class Astar:
 	def heuristic(self, point):
 		return math.sqrt((self.goal.p.x - point.p.x)**2 + (self.goal.p.y - point.p.y)**2)
 
-	def costTo(self, s1, s2):
+	def costTo(self, s1, s2, path):
 		#if (self.isOccupied(s2) or self.isOccupied(s1)):
 		#	return float('inf')
+		if (len(path) > 2):
+			return 1
+		prev = path[len(path) - 2]
+		if (not (s2.p.x == prev.p.x)) and (not (s2.p.y == prev.p.y)):
+			return 2
 		return 1
 
 	def getAdjacent(self, s):
@@ -121,7 +126,7 @@ class Astar:
 				#print 'Checking:',x,y, self.oc.data[int(x+y*self.oc.info.width)]
 				if self.oc.data[int(x + y*self.oc.info.width)] == 100:
 					return True		
-		visit(a, self.pub_frontier)		
+		#visit(a, self.pub_frontier)		
 		return False
 		#return self.oc.data[int(p.p.x + p.p.y*self.oc.info.height)] == 100
 

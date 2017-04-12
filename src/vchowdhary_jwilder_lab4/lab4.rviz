@@ -574,10 +574,10 @@ Visualization Manager:
     - Alpha: 1
       Class: rviz/GridCells
       Color: 170; 0; 0
-      Enabled: false
+      Enabled: true
       Name: FrontierPoints
       Topic: /FrontierPoints
-      Value: false
+      Value: true
     - Alpha: 0.5
       Class: rviz/GridCells
       Color: 25; 255; 0
@@ -605,22 +605,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 10.9419
+      Distance: 28.555
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -3.83963
-        Y: -0.971325
-        Z: 0.446892
+        X: 0.279316
+        Y: 5.26792
+        Z: 0.282148
       Name: Current View
       Near Clip Distance: 0.01
       Pitch: 1.5298
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 6.26327
+      Yaw: 6.27327
     Saved: ~
 Window Geometry:
   Displays:
@@ -638,5 +638,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1615
-  X: 55
-  Y: -14
+  X: 65
+  Y: 24
