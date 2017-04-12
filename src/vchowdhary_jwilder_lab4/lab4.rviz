@@ -10,6 +10,7 @@ Panels:
         - /TF1/Frames1
         - /TF1/Tree1
         - /Map1
+        - /Map1/Orientation1
         - /Global Planning1/Planner1
         - /FrontierPoints1
       Splitter Ratio: 0.5
@@ -119,11 +120,6 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        mount_asus_xtion_pro_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         plate_bottom_link:
           Alpha: 1
           Show Axes: false
@@ -375,7 +371,7 @@ Visualization Manager:
       Draw Behind: false
       Enabled: true
       Name: Map
-      Topic: /map
+      Topic: /move_base/global_costmap/costmap
       Unreliable: false
       Value: true
     - Class: rviz/Group
@@ -605,16 +601,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 28.555
+      Distance: 9.80549
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.279316
-        Y: 5.26792
-        Z: 0.282148
+        X: 0.503191
+        Y: 1.57776
+        Z: 0.271465
       Name: Current View
       Near Clip Distance: 0.01
       Pitch: 1.5298
@@ -638,5 +634,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1615
-  X: 65
-  Y: 24
+  X: 55
+  Y: -14

@@ -1,6 +1,7 @@
 from Queue import PriorityQueue
 from geometry_msgs.msg import Point
 from nav_msgs.msg import GridCells
+from nav_msgs.msg import OccupancyGrid
 from node import *
 import rospy
 import math
@@ -20,7 +21,9 @@ class Astar:
 		self.pub_frontier = pub_frontier
 		self.pub_waypoints = pub_waypoints
 
+		self.sub_cost = rospy.Subscriber('/move_base/global_costmap/costmap', OccupancyGrid, self.updateCost)
 
+		self.costMap = [0]*len(self.oc.data)
 		self.nodes = [[0 for x in range(self.oc.info.height)] for y in range(self.oc.info.width)] 
 		for i in range(self.oc.info.width):
 			for j in range(self.oc.info.height):
@@ -52,7 +55,7 @@ class Astar:
 				if ((not self.isOccupied(n.p)) and curr.cost + self.costTo(curr, n, path) < n.cost):
 					a = [i for i in path]
 					a.append(n)
-					n.cost = curr.cost + self.costTo(curr, n)
+					n.cost = curr.cost + self.costTo(curr, n, path)
 					self.frontier.put((prio, (n, a)))
 					frontierList.append(n)
 			
@@ -68,6 +71,9 @@ class Astar:
 		#visitCells([], self.pub_frontier)
 		print '-----------------------------'
 
+	def updateCost(self, oc):
+		self.costMap = oc.data
+
 	def within(self, n):
 		return n.x <= 37 and n.x >= 0 and n.y >= 0 and n.y <= 37
 
@@ -78,11 +84,11 @@ class Astar:
 		#if (self.isOccupied(s2) or self.isOccupied(s1)):
 		#	return float('inf')
 		if (len(path) > 2):
-			return 1
+			return 2 + self.costMap[s2.p.x + s2.p.y*self.oc.info.width]
 		prev = path[len(path) - 2]
 		if (not (s2.p.x == prev.p.x)) and (not (s2.p.y == prev.p.y)):
-			return 2
-		return 1
+			return 100 + self.costMap[s2.p.x + s2.p.y*self.oc.info.width]
+		return 2 + self.costMap[s2.p.x + s2.p.y*self.oc.info.width]
 
 	def getAdjacent(self, s):
 		p1 = self.makePoint(s.p.x + 1, s.p.y)
@@ -115,10 +121,8 @@ class Astar:
 		a = []
 		for i in range(int(round(0.3/self.oc.info.resolution))):
 			x = round(i + (p.x)*(0.3/self.oc.info.resolution))
-			x2 = 289
 			for j in range(int(round(0.3/self.oc.info.resolution))):
 				y = round(j + (p.y)*(0.3/self.oc.info.resolution))
-				y2 = 343
 				pp = Point()
 				pp.x = x
 				pp.y = y				
