@@ -78,9 +78,17 @@ def goToGoal(g):
 	global p1
 	global p2
 	global running
+	global odom_list
 
 	running = True
 	print 'HUH?'
+
+	odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(2.0))
+	(position, orientation) = odom_list.lookupTransform('map','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
+
+	#print 'ORIGIN IS', oc.info.origin.position.x
+	pose.pose.position.x = position[0] - oc.info.origin.position.x
+	pose.pose.position.y = position[1] - oc.info.origin.position.y
 	p1 = Point()
 	p1.x = int((pose.pose.position.x / 0.3))
 	p1.y = int((pose.pose.position.y/ 0.3))
@@ -113,7 +121,15 @@ def replan(e):
 	global pub_frontier
 	global pub_waypoints
 	global pose
+	global odom_list	
 	print 'Replanning'
+
+	odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(2.0))
+	(position, orientation) = odom_list.lookupTransform('map','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
+
+	#print 'ORIGIN IS', oc.info.origin.position.x
+	pose.pose.position.x = position[0] - oc.info.origin.position.x
+	pose.pose.position.y = position[1] - oc.info.origin.position.y
 	p1.x = int((pose.pose.position.x / 0.3))
 	p1.y = int((pose.pose.position.y/ 0.3))
 
