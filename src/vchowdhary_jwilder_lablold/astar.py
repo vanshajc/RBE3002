@@ -45,7 +45,7 @@ class Astar:
 			frontierList.remove(curr)
 			visited.add(curr)
 			curr.expand()
-			#visitCells(visited, self.pub_visited, self.oc)
+			visitCells(visited, self.pub_visited, self.oc)
 			#print 'Current', curr.p.x, curr.p.y, curr.cost, p
 			if (curr == self.goal):
 				self.path = path
@@ -123,9 +123,16 @@ class Astar:
 			x = round(i + (p.x)*(0.3/self.oc.info.resolution))
 			for j in range(int(round(0.3/self.oc.info.resolution))):
 				y = round(j + (p.y)*(0.3/self.oc.info.resolution))
+				pp = Point()
+				pp.x = x
+				pp.y = y				
+				a.append(pp)
+				#print 'Checking:',x,y, self.oc.data[int(x+y*self.oc.info.width)]
 				if self.oc.data[int(x + y*self.oc.info.width)] == 100:
-					return True			
+					return True		
+		#visit(a, self.pub_frontier)		
 		return False
+		#return self.oc.data[int(p.p.x + p.p.y*self.oc.info.height)] == 100
 
 	def findWaypoints(self, path):
 		wplist = []
@@ -151,8 +158,8 @@ def visitCells(lofp, pub, oc):
 
 	for p in lofp:
 		point = Point()
-		point.x = p.p.x*oc.info.resolution + 0.15 + oc.info.origin.position.x
-		point.y = p.p.y*oc.info.resolution + 0.15 + oc.info.origin.position.y
+		point.x = p.p.x*0.3 + 0.15 + oc.info.origin.position.x
+		point.y = p.p.y*0.3 + 0.15 + oc.info.origin.position.y
 		grid.cells.append(point)
 
 

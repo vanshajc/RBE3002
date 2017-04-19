@@ -26,8 +26,8 @@ def padding():
 			if (oc.data[i + j * oc.info.width] == -1):
 				noc[i + j * oc.info.width] == -1
 			if (oc.data[i + j * oc.info.width] == 100):
-				for rx in range(1):
-					for ry in range(1):
+				for rx in range(2):
+					for ry in range(2):
 						noc = addAround(noc, i + rx, j + ry)
 						noc = addAround(noc, i - rx, j + ry)
 						noc = addAround(noc, i + rx, j - ry)
@@ -54,11 +54,9 @@ def updateMap(oc_grid):
 	global updatedMap
 	global running
 
-	print 'Retreived map'
+	print 'Retreived'
 	oc = oc_grid
 	updatedMap = True
-	findFrontiers()
-	print 'FInsihed'
 	#if running:
 		#replan()
 
@@ -111,7 +109,6 @@ def goToGoal(g):
 	print 'origin', oc.info.origin.position.x, oc.info.origin.position.y
 	print 'robot at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
 	r.calculate()
-	print 'Path length', len(r.path)
 	
 def replan(e):
 	global p1
@@ -161,89 +158,13 @@ def visit(lofp, pub):
 	
 	for p in lofp:
 		point = Point()
-		point.x = (p.x)*oc.info.resolution + 0.15 + oc.info.origin.position.x
-		point.y = (p.y)*oc.info.resolution + 0.15 + oc.info.origin.position.y
+		point.x = (p.x)*oc.info.resolution + oc.info.origin.position.x
+		point.y = (p.y)*oc.info.resolution + oc.info.origin.position.y
 		grid.cells.append(point)
 
 	pub.publish(grid)
 
 
-def findFrontiers():
-	global oc
-	global marked
-	global pub_visited
-	fs = []
-	marked = [False for x in oc.data]	
-	for x in range(oc.info.width):
-		for y in range(oc.info.height):
-			if (not marked[x + y*oc.info.width] and isFrontier(x, y)):
-				#print fs
-				fs = addTo(fs, x, y)
-	print 'Number of Frontier Regions', len(fs)
-	#print fs
-
-	grid = GridCells()
-	grid.header.frame_id = 'map'
-	grid.cell_width = 0.3
-	grid.cell_height = 0.3
-	for f in fs:
-		print f
-		for p in f:
-			point = Point()
-			point.x = p[0]*0.3 + 0.15 + oc.info.origin.position.x
-			point.y = p[1]*0.3 + 0.15 + oc.info.origin.position.y
-			grid.cells.append(point)
-	pub_visited.publish(grid)
-	return fs
-
-def addTo(fs, x, y):
-	for f in fs:
-		for p in f:
-			if (adjacent(p[0], p[1], x, y)):
-				f.append((x,y))
-				#print 'Added to region'
-				return fs
-	fs.append([(x,y)])
-	#print fs
-	return fs
-
-def adjacent(x1, y1, x2, y2):
-	return abs(x1-x2) <= 1 and abs(y1-y2) <=1
-
-#Returns if x,y is a frontier
-def isFrontier(x, y):
-	global oc
-	global marked
-	#getValue(x, y)
-	n = [(x+1, y), (x, y+1), (x-1, y), (x, y-1)]
-	#print 'Looking around', x,y
-	for p in n:
-		if (getValue(x,y) == 0 and getValue(p[0], p[1]) == -1):
-			print 'Found Frontier', x,y
-			marked[x + y*oc.info.width] = True
-			return True
-	return False
-
-
-def getValue(x, y):
-	global oc
-	if (x < 0 or x >= oc.info.width  or y < 0 or y >= oc.info.height):
-		return 100
-	return oc.data[x + y*oc.info.width]
-	"""
-	if (x < 0 or (scale + x*(0.3/oc.info.resolution) >= oc.info.width) or y < 0 or (scale + y*(0.3/oc.info.resolution) >= oc.info.height)):
-		return float('inf')
-	for i in range(scale):
-		x1 = round(i + (x)*(0.3/oc.info.resolution))
-		for j in range(scale):
-			y1 = round(j + (y)*(0.3/oc.info.resolution))
-			print 'trying', x1, y1, x1+y1*oc.info.width, len(oc.data), oc.info.width, oc.info.height
-			if oc.data[int(x1 + y1*oc.info.width)] == 100:
-				return 100
-			elif oc.data[int(x1 + y1*oc.info.width)] == -1:
-				return -1			
-	return 0
-	"""
 
 # This is the program's main function
 if __name__ == '__main__':
@@ -278,7 +199,7 @@ if __name__ == '__main__':
 	p2 = Point()
 	pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, None, queue_size=10) 
 # Publisher for commanding robot motion
-	
+	map_sub = rospy.Subscriber('/map', OccupancyGrid, updateMap, queue_size=1)
 
 	pub_end = rospy.Publisher('/EndPoints', GridCells, queue_size=10)
 	pub_path = rospy.Publisher('/PathPoints', GridCells, queue_size=10)
@@ -289,7 +210,7 @@ if __name__ == '__main__':
 	sub_way = rospy.Subscriber('/WayReached', Point, replan)
 
 	sub_goal = rospy.Subscriber('/GoalPoint', PoseStamped, goToGoal)
-	map_sub = rospy.Subscriber('/map', OccupancyGrid, updateMap, queue_size=1)
+
 	odom_list = tf.TransformListener()
     # Use this command to make the program wait for some seconds
 	rospy.sleep(rospy.Duration(2, 0))
@@ -297,6 +218,28 @@ if __name__ == '__main__':
 	while (not updatedMap and not rospy.is_shutdown()):
 		print 'stuck'
 		rospy.sleep(1)
+
+	odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(2.0))
+	(position, orientation) = odom_list.lookupTransform('map','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
+
+	#print 'ORIGIN IS', oc.info.origin.position.x
+	pose.pose.position.x = position[0] - oc.info.origin.position.x
+	pose.pose.position.y = position[1] - oc.info.origin.position.y
+
+	odomW = orientation
+
+	q = [odomW[0], odomW[1], odomW[2], odomW[3]]
+	roll, pitch, yaw = euler_from_quaternion(q)
+	
+	pose.pose.orientation.z = yaw
+
+	print 'HUH?'
+
+	p1.x = int((pose.pose.position.x / 0.3))
+	p1.y = int((pose.pose.position.y/ 0.3))
+	print 'Currently at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
+	
+	print oc.info.width, oc.data[int(p1.x + p1.y*oc.info.width)], len(oc.data), oc.info.resolution
 
 	# while ros_not_shutdown
 	while (not rospy.is_shutdown()):

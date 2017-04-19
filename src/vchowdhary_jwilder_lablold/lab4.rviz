@@ -11,6 +11,7 @@ Panels:
         - /TF1/Tree1
         - /Map1
         - /Map1/Orientation1
+        - /Global Planning1/Planner1
         - /FrontierPoints1
       Splitter Ratio: 0.5
     Tree Height: 813
@@ -119,11 +120,6 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        mount_asus_xtion_pro_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         plate_bottom_link:
           Alpha: 1
           Show Axes: false
@@ -249,15 +245,251 @@ Visualization Manager:
         {}
       Update Interval: 0
       Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 1
+      Min Color: 0; 0; 0
+      Min Intensity: 1
+      Name: LaserScan (kinect)
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.01
+      Style: Squares
+      Topic: /scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 285
+      Min Color: 0; 0; 0
+      Min Intensity: 2
+      Name: LaserScan (ir sensors)
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.05
+      Style: Flat Squares
+      Topic: /ir_scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: LaserScan (virtual sensor)
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.02
+      Style: Flat Squares
+      Topic: /virtual_sensor_scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: PointCloud (bumpers)
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.04
+      Style: Flat Squares
+      Topic: /mobile_base/sensors/bumper_pointcloud
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
     - Alpha: 0.7
       Class: rviz/Map
       Color Scheme: map
       Draw Behind: false
       Enabled: true
       Name: Map
-      Topic: /map
+      Topic: /move_base/global_costmap/costmap
       Unreliable: false
       Value: true
+    - Class: rviz/Group
+      Displays:
+        - Alpha: 0.7
+          Class: rviz/Map
+          Color Scheme: costmap
+          Draw Behind: false
+          Enabled: false
+          Name: Costmap
+          Topic: /move_base/local_costmap/costmap
+          Unreliable: false
+          Value: false
+        - Alpha: 1
+          Buffer Length: 1
+          Class: rviz/Path
+          Color: 0; 12; 255
+          Enabled: true
+          Line Style: Lines
+          Line Width: 0.03
+          Name: Planner
+          Offset:
+            X: 0
+            Y: 0
+            Z: 0
+          Topic: /move_base/DWAPlannerROS/local_plan
+          Unreliable: false
+          Value: true
+        - Alpha: 0.5
+          Autocompute Intensity Bounds: true
+          Autocompute Value Bounds:
+            Max Value: 10
+            Min Value: -10
+            Value: true
+          Axis: Z
+          Channel Name: total_cost
+          Class: rviz/PointCloud2
+          Color: 255; 255; 255
+          Color Transformer: Intensity
+          Decay Time: 0
+          Enabled: true
+          Invert Rainbow: false
+          Max Color: 255; 255; 255
+          Max Intensity: 726.3
+          Min Color: 0; 0; 0
+          Min Intensity: 0
+          Name: Cost Cloud
+          Position Transformer: XYZ
+          Queue Size: 10
+          Selectable: true
+          Size (Pixels): 3
+          Size (m): 0.04
+          Style: Flat Squares
+          Topic: /move_base/DWAPlannerROS/cost_cloud
+          Unreliable: false
+          Use Fixed Frame: true
+          Use rainbow: true
+          Value: true
+        - Alpha: 1
+          Autocompute Intensity Bounds: true
+          Autocompute Value Bounds:
+            Max Value: 10
+            Min Value: -10
+            Value: true
+          Axis: Z
+          Channel Name: total_cost
+          Class: rviz/PointCloud2
+          Color: 255; 255; 255
+          Color Transformer: Intensity
+          Decay Time: 0
+          Enabled: false
+          Invert Rainbow: false
+          Max Color: 255; 255; 255
+          Max Intensity: 128.275
+          Min Color: 0; 0; 0
+          Min Intensity: 43.2
+          Name: Trajectory Cloud
+          Position Transformer: XYZ
+          Queue Size: 10
+          Selectable: true
+          Size (Pixels): 3
+          Size (m): 0.04
+          Style: Flat Squares
+          Topic: /move_base/DWAPlannerROS/trajectory_cloud
+          Unreliable: false
+          Use Fixed Frame: true
+          Use rainbow: false
+          Value: false
+      Enabled: false
+      Name: Local Planning
+    - Class: rviz/Group
+      Displays:
+        - Alpha: 0.4
+          Class: rviz/Map
+          Color Scheme: costmap
+          Draw Behind: true
+          Enabled: true
+          Name: Costmap
+          Topic: /move_base/global_costmap/costmap
+          Unreliable: false
+          Value: true
+        - Alpha: 1
+          Buffer Length: 1
+          Class: rviz/Path
+          Color: 255; 0; 0
+          Enabled: true
+          Line Style: Lines
+          Line Width: 0.03
+          Name: Planner
+          Offset:
+            X: 0
+            Y: 0
+            Z: 0
+          Topic: /move_base/DWAPlannerROS/global_plan
+          Unreliable: false
+          Value: true
+      Enabled: false
+      Name: Global Planning
     - Alpha: 1
       Axes Length: 1
       Axes Radius: 0.1
@@ -273,6 +505,29 @@ Visualization Manager:
       Topic: /move_base/current_goal
       Unreliable: false
       Value: false
+    - Arrow Length: 0.2
+      Class: rviz/PoseArray
+      Color: 0; 192; 0
+      Enabled: false
+      Name: ParticleCloud
+      Topic: /particlecloud
+      Unreliable: false
+      Value: false
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: false
+      Line Style: Lines
+      Line Width: 0.03
+      Name: Path (global)
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Topic: /move_base/NavfnROS/plan
+      Unreliable: false
+      Value: false
     - Angle Tolerance: 0.1
       Class: rviz/Odometry
       Color: 48; 48; 48
@@ -283,13 +538,21 @@ Visualization Manager:
       Position Tolerance: 0.1
       Topic: /odom
       Value: false
+    - Class: rviz/MarkerArray
+      Enabled: false
+      Marker Topic: /move_base/EBandPlannerROS/eband_visualization_array
+      Name: EBand boubles
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: false
     - Alpha: 0.5
       Class: rviz/GridCells
       Color: 68; 12; 255
-      Enabled: false
+      Enabled: true
       Name: PathPoints
       Topic: /PathPoints
-      Value: false
+      Value: true
     - Alpha: 0.6
       Class: rviz/GridCells
       Color: 0; 170; 255
@@ -300,17 +563,17 @@ Visualization Manager:
     - Alpha: 0.1
       Class: rviz/GridCells
       Color: 255; 170; 0
-      Enabled: true
+      Enabled: false
       Name: VisitedPoints
       Topic: /VisitedPoints
-      Value: true
+      Value: false
     - Alpha: 1
       Class: rviz/GridCells
       Color: 170; 0; 0
-      Enabled: false
+      Enabled: true
       Name: FrontierPoints
       Topic: /FrontierPoints
-      Value: false
+      Value: true
     - Alpha: 0.5
       Class: rviz/GridCells
       Color: 25; 255; 0
@@ -338,22 +601,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 40.4132
+      Distance: 9.80549
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 23.3692
-        Y: 20.1588
-        Z: -0.65888
+        X: 0.503191
+        Y: 1.57776
+        Z: 0.271465
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.8198
+      Pitch: 1.5298
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 6.21327
+      Yaw: 6.27327
     Saved: ~
 Window Geometry:
   Displays:
@@ -371,5 +634,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1615
-  X: 65
-  Y: 24
+  X: 55
+  Y: -14
