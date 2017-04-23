@@ -11,6 +11,7 @@ from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Point
 from tf.transformations import euler_from_quaternion
 from astar import *
+from Queue import PriorityQueue
 
 
 def padding():
@@ -58,7 +59,6 @@ def updateMap(oc_grid):
 	oc = oc_grid
 	updatedMap = True
 	findFrontiers()
-	print 'FInsihed'
 	#if running:
 		#replan()
 
@@ -69,6 +69,9 @@ def c(n):
 	return r
 
 def goToGoal(g):
+	navToGoal(g.pose.position)
+
+def navToGoal(g):
 	global oc
 	global pose
 	global pub_end
@@ -96,9 +99,9 @@ def goToGoal(g):
 	p1.y = int((pose.pose.position.y/ 0.3))
 	print 'Currently at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
 	p2 = Point()
-	print 'goal at', g.pose.position.x - oc.info.origin.position.x, g.pose.position.y - oc.info.origin.position.y 
-	p2.x = int((g.pose.position.x - oc.info.origin.position.x)/0.3) # 30
-	p2.y = int((g.pose.position.y - oc.info.origin.position.y)/0.3) # 35
+	print 'goal at', g.x - oc.info.origin.position.x, g.y - oc.info.origin.position.y 
+	p2.x = g.x/6#int((g.x - oc.info.origin.position.x)/0.3) # 30
+	p2.y = g.y/6#int((g.y - oc.info.origin.position.y)/0.3) # 35
 	
 	noc = OccupancyGrid()
 	noc.info = oc.info
@@ -107,9 +110,9 @@ def goToGoal(g):
 	visit(pad_pts, pub_frontier)
 	r = Astar(p1, p2, noc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
 
-	print 'occupied?', r.isOccupied(p2)
+	#print 'occupied?', r.isOccupied(p2)
 	print 'origin', oc.info.origin.position.x, oc.info.origin.position.y
-	print 'robot at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
+	print 'robot at', p1.x, p1.y, p2.x, p2.y
 	r.calculate()
 	print 'Path length', len(r.path)
 	
@@ -127,6 +130,47 @@ def replan(e):
 	global odom_list	
 	print 'Replanning'
 
+	updatePosition()
+
+	if (p1.x == p2.x and p1.y == p2.y):
+		return
+
+	print 'Sleeping'
+	rospy.sleep(5)
+	print 'Driving Frontiers'
+	driveToFrontier()
+	#noc = OccupancyGrid()
+	#noc.info = oc.info
+	#noc.data = oc.data
+	#noc.data = padding()
+	#visit(pad_pts, pub_frontier)
+	#r = Astar(p1, p2, noc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
+
+	#print 'occupied?', r.isOccupied(p2)
+	#print 'origin', oc.info.origin.position.x, oc.info.origin.position.y
+	#print 'robot at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
+	#r.calculate()
+	
+
+
+def driveToFrontier():
+	global fs
+	global p1
+	pq = PriorityQueue()
+	for f in fs:
+		pq.put((distance(centroid(f), p1), centroid(f)))
+		
+	g = Point()
+	temp = pq.get()
+	g.x = temp[1][0]
+	g.y = temp[1][1]
+	p2 = g
+	print 'Going to', g
+	navToGoal(g)
+
+def updatePosition():
+	global pose
+	global p1
 	odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(2.0))
 	(position, orientation) = odom_list.lookupTransform('map','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
 
@@ -136,22 +180,6 @@ def replan(e):
 	p1.x = int((pose.pose.position.x / 0.3))
 	p1.y = int((pose.pose.position.y/ 0.3))
 
-	if (p1.x == p2.x and p1.y == p2.y):
-		return
-
-	noc = OccupancyGrid()
-	noc.info = oc.info
-	noc.data = oc.data
-	noc.data = padding()
-	visit(pad_pts, pub_frontier)
-	r = Astar(p1, p2, noc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
-
-	print 'occupied?', r.isOccupied(p2)
-	print 'origin', oc.info.origin.position.x, oc.info.origin.position.y
-	print 'robot at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
-	r.calculate()
-	
-	
 def visit(lofp, pub):
 	
 	grid = GridCells()
@@ -172,6 +200,9 @@ def findFrontiers():
 	global oc
 	global marked
 	global pub_visited
+	global p1
+	global p2
+	global fs
 	fs = []
 	marked = [False for x in oc.data]	
 	for x in range(oc.info.width):
@@ -194,18 +225,54 @@ def findFrontiers():
 			point.y = p[1]*0.3 + 0.15 + oc.info.origin.position.y
 			grid.cells.append(point)
 	pub_visited.publish(grid)
+	'''
+	updatePosition()
+	pq = PriorityQueue()
+	for f in fs:
+		pq.put((distance(centroid(f), p1), centroid(f)))
+		
+	g = Point()
+	temp = pq.get()
+	g.x = temp[1][0]
+	g.y = temp[1][1]
+	p2 = g
+	print 'Going to', g
+	navToGoal(g)'''
 	return fs
 
 def addTo(fs, x, y):
+	cfr = [(x,y)] #holds the frontier region containing x,y
+	nf = [] # new copy of the frontier regions
+	#found = False
 	for f in fs:
+		found = False
 		for p in f:
 			if (adjacent(p[0], p[1], x, y)):
-				f.append((x,y))
+				cfr.extend(f)
+				found = True
+				break
+		if (not found):
+			nf.append(f)			
+				#f.append((x,y))
 				#print 'Added to region'
-				return fs
-	fs.append([(x,y)])
+				#return fs
+	#fs.append([(x,y)])
+	nf.append(cfr)	
 	#print fs
-	return fs
+	return nf
+
+def distance(a1, a2):
+	return abs(a1[0] - a2.x) + abs(a1[1] - a2.y)
+
+#returns centroid of a frontier region
+def centroid(fs):
+	sumx = 0
+	sumy = 0
+	for i in fs:
+		sumx += i[0]
+		sumy += i[1]
+	return (sumx/len(fs), sumy/len(fs))
+
 
 def adjacent(x1, y1, x2, y2):
 	return abs(x1-x2) <= 1 and abs(y1-y2) <=1
@@ -245,10 +312,18 @@ def getValue(x, y):
 	return 0
 	"""
 
+def makeAstar(start, goal, data):
+	global pub_end
+	global pub_path
+	global pub_visited
+	global pub_frontier
+	global pub_waypoints
+	return Astar(start, goal, data, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
+
 # This is the program's main function
 if __name__ == '__main__':
     # Change this node name to include your username
-	rospy.init_node('vchowdhary_jwilder_lab4')
+	rospy.init_node('vchowdhary_jwilder_final')
 
     # These are global variables. Write "global <variable_name>" in any other function to gain access to these global variables 
 	global pub
@@ -297,6 +372,8 @@ if __name__ == '__main__':
 	while (not updatedMap and not rospy.is_shutdown()):
 		print 'stuck'
 		rospy.sleep(1)
+
+	driveToFrontier()
 
 	# while ros_not_shutdown
 	while (not rospy.is_shutdown()):

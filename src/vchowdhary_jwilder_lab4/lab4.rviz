@@ -46,8 +46,8 @@ Visualization Manager:
       Name: Grid
       Normal Cell Count: 0
       Offset:
-        X: 6.05
-        Y: 5.55
+        X: 0
+        Y: 0
         Z: 0
       Plane: XY
       Plane Cell Count: 70
@@ -119,11 +119,6 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        mount_asus_xtion_pro_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         plate_bottom_link:
           Alpha: 1
           Show Axes: false
@@ -307,10 +302,10 @@ Visualization Manager:
     - Alpha: 1
       Class: rviz/GridCells
       Color: 170; 0; 0
-      Enabled: false
+      Enabled: true
       Name: FrontierPoints
       Topic: /FrontierPoints
-      Value: false
+      Value: true
     - Alpha: 0.5
       Class: rviz/GridCells
       Color: 25; 255; 0
@@ -338,22 +333,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 40.4132
+      Distance: 2.96298
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 23.3692
-        Y: 20.1588
-        Z: -0.65888
+        X: 4.35949
+        Y: 0.568941
+        Z: 7.52545
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.8198
+      Pitch: 1.3098
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 6.21327
+      Yaw: 6.26329
     Saved: ~
 Window Geometry:
   Displays:
@@ -371,5 +366,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1615
-  X: 65
-  Y: 24
+  X: 55
+  Y: -14

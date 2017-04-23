@@ -69,7 +69,7 @@ def rotate(angle):
 		rospy.sleep(0.01)
 
 	rospy.sleep(1)
-	pub_way.publish(Point())
+	#pub_way.publish(Point())
 	rospy.sleep(0.5)
 	publishTwist(0, 0)
 

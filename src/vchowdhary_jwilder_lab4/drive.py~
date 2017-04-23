@@ -68,8 +68,9 @@ def rotate(angle):
 		publishTwist(0, (1.5 * error/90) + 0.3*(error/abs(error)))
 		rospy.sleep(0.01)
 
-	pub_way.publish(Point())
 	rospy.sleep(1)
+	pub_way.publish(Point())
+	rospy.sleep(0.5)
 	publishTwist(0, 0)
 
 def driveTo(distance):

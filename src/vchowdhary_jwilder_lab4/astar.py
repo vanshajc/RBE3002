@@ -67,7 +67,7 @@ class Astar:
 		visitCells(self.path, self.pub_path, self.oc)	
 		wp = self.findWaypoints(self.path);
 		visitCells(wp, self.pub_waypoints, self.oc)	
-		visitCells([], self.pub_visited, self.oc)
+		#visitCells([], self.pub_visited, self.oc)
 		#visitCells([], self.pub_frontier)
 		print '-----------------------------'
 
@@ -123,6 +123,7 @@ class Astar:
 			x = round(i + (p.x)*(0.3/self.oc.info.resolution))
 			for j in range(int(round(0.3/self.oc.info.resolution))):
 				y = round(j + (p.y)*(0.3/self.oc.info.resolution))
+				print 'Checking', x, y, len(self.oc.data), x + y*self.oc.info.width
 				if self.oc.data[int(x + y*self.oc.info.width)] == 100:
 					return True			
 		return False
