@@ -113,6 +113,7 @@ class Astar:
 		#p.x = x;
 		#p.y = y;
 		#if (x < 37 and x >= 0 and y >= 0 and y < 37):
+		print 'Making point', x, y, self.oc.info.width, self.oc.info.height
 		if (abs(x) < self.oc.info.width and abs(y) < self.oc.info.height):
 			return self.nodes[x][y]
 		return -1
@@ -124,8 +125,9 @@ class Astar:
 			for j in range(int(round(0.3/self.oc.info.resolution))):
 				y = round(j + (p.y)*(0.3/self.oc.info.resolution))
 				print 'Checking', x, y, len(self.oc.data), x + y*self.oc.info.width
-				if self.oc.data[int(x + y*self.oc.info.width)] == 100:
-					return True			
+				if (x < self.oc.info.width and y < self.oc.info.height):
+					if self.oc.data[int(x + y*self.oc.info.width)] == 100:
+						return True			
 		return False
 
 	def findWaypoints(self, path):

@@ -100,8 +100,8 @@ def navToGoal(g):
 	print 'Currently at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
 	p2 = Point()
 	print 'goal at', g.x - oc.info.origin.position.x, g.y - oc.info.origin.position.y 
-	p2.x = g.x/6#int((g.x - oc.info.origin.position.x)/0.3) # 30
-	p2.y = g.y/6#int((g.y - oc.info.origin.position.y)/0.3) # 35
+	p2.x = g.x#int((g.x - oc.info.origin.position.x)/0.3) # 30
+	p2.y = g.y#int((g.y - oc.info.origin.position.y)/0.3) # 35
 	
 	noc = OccupancyGrid()
 	noc.info = oc.info
