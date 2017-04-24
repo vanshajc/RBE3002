@@ -27,8 +27,8 @@ def padding():
 			if (oc.data[i + j * oc.info.width] == -1):
 				noc[i + j * oc.info.width] == -1
 			if (oc.data[i + j * oc.info.width] == 100):
-				for rx in range(1):
-					for ry in range(1):
+				for rx in range(2):
+					for ry in range(2):
 						noc = addAround(noc, i + rx, j + ry)
 						noc = addAround(noc, i - rx, j + ry)
 						noc = addAround(noc, i + rx, j - ry)
@@ -84,30 +84,19 @@ def navToGoal(g):
 	global p2
 	global running
 	global odom_list
+	global noc
 
 	running = True
 	print 'HUH?'
 
-	odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(2.0))
-	(position, orientation) = odom_list.lookupTransform('map','base_footprint', rospy.Time(0)) #finds the position and oriention of two objects relative to each other (hint: this returns arrays, while Pose uses lists)
+	updatePosition()
 
-	#print 'ORIGIN IS', oc.info.origin.position.x
-	pose.pose.position.x = position[0] - oc.info.origin.position.x
-	pose.pose.position.y = position[1] - oc.info.origin.position.y
-	p1 = Point()
-	p1.x = int((pose.pose.position.x / 0.3))
-	p1.y = int((pose.pose.position.y/ 0.3))
 	print 'Currently at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
 	p2 = Point()
-	print 'goal at', g.x - oc.info.origin.position.x, g.y - oc.info.origin.position.y 
+	print 'goal at', g.x, g.y
 	p2.x = g.x#int((g.x - oc.info.origin.position.x)/0.3) # 30
 	p2.y = g.y#int((g.y - oc.info.origin.position.y)/0.3) # 35
 	
-	noc = OccupancyGrid()
-	noc.info = oc.info
-	noc.data = oc.data
-	noc.data = padding()
-	visit(pad_pts, pub_frontier)
 	r = Astar(p1, p2, noc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
 
 	#print 'occupied?', r.isOccupied(p2)
@@ -156,16 +145,31 @@ def replan(e):
 def driveToFrontier():
 	global fs
 	global p1
+	global pub_centroid
+
 	pq = PriorityQueue()
+	l = []
+	updatePosition()
 	for f in fs:
-		pq.put((distance(centroid(f), p1), centroid(f)))
-		
+		pq.put((distance(centroid(f), p1), f))
+		p = Point()
+		p.x = centroid(f)[0]
+		p.y = centroid(f)[1]
+		l.append(p)
+		print 'Centroid', p.x, p.y
+
+	visit(l, pub_centroid)
 	g = Point()
+
+	if (len(fs) == 0):
+		return
+
 	temp = pq.get()
-	g.x = temp[1][0]
-	g.y = temp[1][1]
+	g.x = centroid(temp[1])[0]
+	g.y = centroid(temp[1])[1]
 	p2 = g
 	print 'Going to', g
+	print 'Frontier', f
 	navToGoal(g)
 
 def updatePosition():
@@ -177,8 +181,8 @@ def updatePosition():
 	#print 'ORIGIN IS', oc.info.origin.position.x
 	pose.pose.position.x = position[0] - oc.info.origin.position.x
 	pose.pose.position.y = position[1] - oc.info.origin.position.y
-	p1.x = int((pose.pose.position.x / 0.3))
-	p1.y = int((pose.pose.position.y/ 0.3))
+	p1.x = int((pose.pose.position.x / 0.15))
+	p1.y = int((pose.pose.position.y/ 0.15))
 
 def visit(lofp, pub):
 	
@@ -203,6 +207,15 @@ def findFrontiers():
 	global p1
 	global p2
 	global fs
+	global noc
+
+	noc = OccupancyGrid()
+	noc.info = oc.info
+	noc.data = oc.data
+	noc.data = padding()
+
+	visit(pad_pts, pub_frontier)
+
 	fs = []
 	marked = [False for x in oc.data]	
 	for x in range(oc.info.width):
@@ -215,29 +228,16 @@ def findFrontiers():
 
 	grid = GridCells()
 	grid.header.frame_id = 'map'
-	grid.cell_width = 0.3
-	grid.cell_height = 0.3
+	grid.cell_width = 0.15
+	grid.cell_height = 0.15
 	for f in fs:
 		print f
 		for p in f:
 			point = Point()
-			point.x = p[0]*0.3 + 0.15 + oc.info.origin.position.x
-			point.y = p[1]*0.3 + 0.15 + oc.info.origin.position.y
+			point.x = p[0]*0.15 + 0.075 + oc.info.origin.position.x
+			point.y = p[1]*0.15 + 0.075 + oc.info.origin.position.y
 			grid.cells.append(point)
 	pub_visited.publish(grid)
-	'''
-	updatePosition()
-	pq = PriorityQueue()
-	for f in fs:
-		pq.put((distance(centroid(f), p1), centroid(f)))
-		
-	g = Point()
-	temp = pq.get()
-	g.x = temp[1][0]
-	g.y = temp[1][1]
-	p2 = g
-	print 'Going to', g
-	navToGoal(g)'''
 	return fs
 
 def addTo(fs, x, y):
@@ -279,7 +279,7 @@ def adjacent(x1, y1, x2, y2):
 
 #Returns if x,y is a frontier
 def isFrontier(x, y):
-	global oc
+	global noc
 	global marked
 	#getValue(x, y)
 	n = [(x+1, y), (x, y+1), (x-1, y), (x, y-1)]
@@ -287,16 +287,16 @@ def isFrontier(x, y):
 	for p in n:
 		if (getValue(x,y) == 0 and getValue(p[0], p[1]) == -1):
 			print 'Found Frontier', x,y
-			marked[x + y*oc.info.width] = True
+			marked[x + y*noc.info.width] = True
 			return True
 	return False
 
 
 def getValue(x, y):
-	global oc
-	if (x < 0 or x >= oc.info.width  or y < 0 or y >= oc.info.height):
+	global noc
+	if (x < 0 or x >= noc.info.width  or y < 0 or y >= noc.info.height):
 		return 100
-	return oc.data[x + y*oc.info.width]
+	return oc.data[x + y*noc.info.width]
 	"""
 	if (x < 0 or (scale + x*(0.3/oc.info.resolution) >= oc.info.width) or y < 0 or (scale + y*(0.3/oc.info.resolution) >= oc.info.height)):
 		return float('inf')
@@ -335,6 +335,7 @@ if __name__ == '__main__':
 	global pub_visited
 	global pub_frontier
 	global pub_pose
+	global pub_centroid
 	global grid
 	global oc
 	global updatedMap
@@ -360,6 +361,7 @@ if __name__ == '__main__':
 	pub_visited = rospy.Publisher('/VisitedPoints', GridCells, queue_size=10)
 	pub_frontier = rospy.Publisher('/FrontierPoints', GridCells, queue_size=10)
 	pub_waypoints = rospy.Publisher('/Waypoints', GridCells, queue_size=10)
+	pub_centroid = rospy.Publisher('/Centroid', GridCells, queue_size=10)
 	pub_pose = rospy.Publisher('/lab4_pose', PoseStamped, queue_size=10)
 	sub_way = rospy.Subscriber('/WayReached', Point, replan)
 

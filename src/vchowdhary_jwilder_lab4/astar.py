@@ -83,12 +83,9 @@ class Astar:
 	def costTo(self, s1, s2, path):
 		#if (self.isOccupied(s2) or self.isOccupied(s1)):
 		#	return float('inf')
-		if (len(path) < 2):
-			return 2 + self.costMap[s2.p.x + s2.p.y*self.oc.info.width]
-		prev = path[len(path) - 2]
-		if (not (s2.p.x == prev.p.x)) and (not (s2.p.y == prev.p.y)):
-			return 100 + self.costMap[s2.p.x + s2.p.y*self.oc.info.width]
-		return 2 + self.costMap[s2.p.x + s2.p.y*self.oc.info.width]
+		if (self.oc.data[s2.p.x + s2.p.y*self.oc.info.width] == -1):
+			return 10
+		return 2 #+ self.costMap[s2.p.x + s2.p.y*self.oc.info.width]
 
 	def getAdjacent(self, s):
 		p1 = self.makePoint(s.p.x + 1, s.p.y)
@@ -113,21 +110,23 @@ class Astar:
 		#p.x = x;
 		#p.y = y;
 		#if (x < 37 and x >= 0 and y >= 0 and y < 37):
-		print 'Making point', x, y, self.oc.info.width, self.oc.info.height
+		#print 'Making point', x, y, self.oc.info.width, self.oc.info.height
 		if (abs(x) < self.oc.info.width and abs(y) < self.oc.info.height):
 			return self.nodes[x][y]
 		return -1
 
 	def isOccupied(self, p):
-		a = []
+		'''a = []
 		for i in range(int(round(0.3/self.oc.info.resolution))):
 			x = round(i + (p.x)*(0.3/self.oc.info.resolution))
 			for j in range(int(round(0.3/self.oc.info.resolution))):
 				y = round(j + (p.y)*(0.3/self.oc.info.resolution))
-				print 'Checking', x, y, len(self.oc.data), x + y*self.oc.info.width
 				if (x < self.oc.info.width and y < self.oc.info.height):
 					if self.oc.data[int(x + y*self.oc.info.width)] == 100:
-						return True			
+		
+					return True '''			
+		if (self.oc.data[p.x + p.y*self.oc.info.width] == 100):
+			return True
 		return False
 
 	def findWaypoints(self, path):
@@ -137,9 +136,9 @@ class Astar:
 			prev = path[i-1]
 			curr = path[i]
 			next = path[i+1]
-			print prev.p.x, curr.p.x, next.p.x, prev.p.y, curr.p.y, next.p.y
+			#print prev.p.x, curr.p.x, next.p.x, prev.p.y, curr.p.y, next.p.y
 			if prev.p.x != next.p.x and prev.p.y != next.p.y:
-				print "waypoint"
+				#print "waypoint"
 				wplist.append(curr)
 			i +=1
 		wplist.append(self.goal)
@@ -149,13 +148,13 @@ def visitCells(lofp, pub, oc):
 	
 	grid = GridCells()
 	grid.header.frame_id = 'map'
-	grid.cell_width = 0.3
-	grid.cell_height = 0.3
+	grid.cell_width = 0.15
+	grid.cell_height = 0.15
 
 	for p in lofp:
 		point = Point()
-		point.x = p.p.x*oc.info.resolution + 0.15 + oc.info.origin.position.x
-		point.y = p.p.y*oc.info.resolution + 0.15 + oc.info.origin.position.y
+		point.x = p.p.x*oc.info.resolution + 0.075 + oc.info.origin.position.x
+		point.y = p.p.y*oc.info.resolution + 0.075 + oc.info.origin.position.y
 		grid.cells.append(point)
 
 

@@ -6,12 +6,11 @@ Panels:
       Expanded:
         - /Grid1
         - /Grid1/Offset1
-        - /RobotModel1/Links1
         - /TF1/Frames1
         - /TF1/Tree1
         - /Map1
         - /Map1/Orientation1
-        - /FrontierPoints1
+        - /CentroidPoints1
       Splitter Ratio: 0.5
     Tree Height: 813
   - Class: rviz/Selection
@@ -36,7 +35,7 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 0.5
-      Cell Size: 0.3
+      Cell Size: 0.15
       Class: rviz/Grid
       Color: 160; 160; 164
       Enabled: true
@@ -119,6 +118,11 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        mount_asus_xtion_pro_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         plate_bottom_link:
           Alpha: 1
           Show Axes: false
@@ -281,10 +285,10 @@ Visualization Manager:
     - Alpha: 0.5
       Class: rviz/GridCells
       Color: 68; 12; 255
-      Enabled: false
+      Enabled: true
       Name: PathPoints
       Topic: /PathPoints
-      Value: false
+      Value: true
     - Alpha: 0.6
       Class: rviz/GridCells
       Color: 0; 170; 255
@@ -302,16 +306,23 @@ Visualization Manager:
     - Alpha: 1
       Class: rviz/GridCells
       Color: 170; 0; 0
-      Enabled: true
+      Enabled: false
       Name: FrontierPoints
       Topic: /FrontierPoints
-      Value: true
+      Value: false
     - Alpha: 0.5
       Class: rviz/GridCells
       Color: 25; 255; 0
-      Enabled: true
+      Enabled: false
       Name: EndPoints
       Topic: /EndPoints
+      Value: false
+    - Alpha: 1
+      Class: rviz/GridCells
+      Color: 238; 238; 9
+      Enabled: true
+      Name: CentroidPoints
+      Topic: /Centroid
       Value: true
   Enabled: true
   Global Options:
@@ -325,7 +336,7 @@ Visualization Manager:
       Hide Inactive Objects: true
     - Class: rviz/Select
     - Class: rviz/SetInitialPose
-      Topic: /initialpose
+      Topic: /GoalPoint
     - Class: rviz/SetGoal
       Topic: /GoalPoint
     - Class: rviz/Measure
@@ -333,22 +344,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.96298
+      Distance: 7.77072
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 4.35949
-        Y: 0.568941
-        Z: 7.52545
+        X: 0.0559341
+        Y: -0.517716
+        Z: 8.25851
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 1.3098
+      Pitch: 1.4798
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 6.26329
+      Yaw: 6.25329
     Saved: ~
 Window Geometry:
   Displays:
@@ -366,5 +377,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1615
-  X: 55
-  Y: -14
+  X: 65
+  Y: 24

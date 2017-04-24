@@ -22,6 +22,11 @@ def drivePath(gridcells):
 	if (len(waypts) == 0):
 		return
 	navToPose(waypts[0])
+	
+	for i in range(4):
+		rotate(90)
+		rospy.sleep(2)
+
 	pub_way.publish(waypts[0])
 	print 'Waypoint reached'
 
@@ -88,7 +93,8 @@ def driveTo(distance):
 			publishTwist(0, 0)
 		else:
 			publishTwist((distance - cd)*0.1/distance + 0.1, 0)
-			rospy.sleep(0.01)
+			rospy.sleep(0.1)
+			pub_way.publish(Point())
 
 def publishTwist(linV, angV):
 	global pub
@@ -153,6 +159,11 @@ if __name__ == '__main__':
     # Use this command to make the program wait for some seconds
 	rospy.sleep(rospy.Duration(2, 0))
 	print 'Started'
+
+	for i in range(4):
+		rotate(90)
+		driveTo(0.5)
+		rospy.sleep(2)
 	#while(1):
 	rospy.sleep(100000)
 	
