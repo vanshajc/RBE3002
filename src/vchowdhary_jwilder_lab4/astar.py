@@ -62,6 +62,7 @@ class Astar:
 			#visitCells(frontierList, self.pub_frontier)
 			#rospy.sleep(0.1)
 		print '-----------------------------'
+	def publish(self):
 		#print visited
 		#visitCells(visited, self.pub_visited)
 		visitCells(self.path, self.pub_path, self.oc)	

@@ -83,6 +83,8 @@ class Astar:
 	def costTo(self, s1, s2, path):
 		#if (self.isOccupied(s2) or self.isOccupied(s1)):
 		#	return float('inf')
+		if (self.oc.data[s2.p.x + s2.p.y*self.oc.info.width] == -1):
+			return 10
 		return 2 #+ self.costMap[s2.p.x + s2.p.y*self.oc.info.width]
 
 	def getAdjacent(self, s):

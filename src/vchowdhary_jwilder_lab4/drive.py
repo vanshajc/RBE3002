@@ -13,7 +13,7 @@ from tf.transformations import euler_from_quaternion
 
 def drivePath(gridcells):
 	global pub_way
-
+	global pose
 	waypts = gridcells.cells
 	print 'Driving!', waypts
 	#rotate(180)	
@@ -21,12 +21,21 @@ def drivePath(gridcells):
 	#for p in waypts:
 	if (len(waypts) == 0):
 		return
+	
+	currp = pose.pose.position	
 	navToPose(waypts[0])
 	
-	for i in range(4):
-		rotate(90)
-		rospy.sleep(2)
-
+	for w in waypts[1:]:
+		print 'DISTANCE TO WAYPOINT', abs(w.x - currp.x) + abs(w.y - currp.y), currp.x, currp.y
+		if ( abs(w.x - currp.x) + abs(w.y - currp.y) < 2):
+			print 'Continuing Path'
+			navToPose(w)
+		else:
+			break
+	#for i in range(4):
+	#	rotate(90)
+	#	rospy.sleep(2)
+	print 'Replanning now'
 	pub_way.publish(waypts[0])
 	print 'Waypoint reached'
 
@@ -94,7 +103,7 @@ def driveTo(distance):
 		else:
 			publishTwist((distance - cd)*0.1/distance + 0.1, 0)
 			rospy.sleep(0.1)
-			pub_way.publish(Point())
+			#pub_way.publish(Point())
 
 def publishTwist(linV, angV):
 	global pub
@@ -162,7 +171,9 @@ if __name__ == '__main__':
 
 	for i in range(4):
 		rotate(90)
-		driveTo(0.5)
+		publishTwist(0.3, 0)
+		rospy.sleep(1)
+		publishTwist(0, 0)
 		rospy.sleep(2)
 	#while(1):
 	rospy.sleep(100000)
