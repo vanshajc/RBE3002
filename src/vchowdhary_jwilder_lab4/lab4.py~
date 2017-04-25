@@ -58,7 +58,7 @@ def updateMap(oc_grid):
 	print 'Retreived map'
 	oc = oc_grid
 	updatedMap = True
-	#findFrontiers()
+	findFrontiers()
 	#if running:
 		#replan()
 

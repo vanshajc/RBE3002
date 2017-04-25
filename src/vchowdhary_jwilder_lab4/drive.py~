@@ -26,7 +26,7 @@ def drivePath(gridcells):
 	navToPose(waypts[0])
 	
 	for w in waypts[1:]:
-		print 'DISTANCE TO WAYPOINT', abs(w.x - currp.x) + abs(w.y - currp.y)
+		print 'DISTANCE TO WAYPOINT', abs(w.x - currp.x) + abs(w.y - currp.y), currp.x, currp.y
 		if ( abs(w.x - currp.x) + abs(w.y - currp.y) < 2):
 			print 'Continuing Path'
 			navToPose(w)

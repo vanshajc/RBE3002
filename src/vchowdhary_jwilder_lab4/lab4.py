@@ -27,8 +27,8 @@ def padding():
 			if (oc.data[i + j * oc.info.width] == -1):
 				noc[i + j * oc.info.width] == -1
 			if (oc.data[i + j * oc.info.width] == 100):
-				for rx in range(2):
-					for ry in range(2):
+				for rx in range(3):
+					for ry in range(3):
 						noc = addAround(noc, i + rx, j + ry)
 						noc = addAround(noc, i - rx, j + ry)
 						noc = addAround(noc, i + rx, j - ry)
