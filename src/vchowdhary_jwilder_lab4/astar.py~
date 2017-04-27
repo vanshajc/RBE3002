@@ -62,6 +62,7 @@ class Astar:
 			#visitCells(frontierList, self.pub_frontier)
 			#rospy.sleep(0.1)
 		print '-----------------------------'
+	def publish(self):
 		#print visited
 		#visitCells(visited, self.pub_visited)
 		visitCells(self.path, self.pub_path, self.oc)	
@@ -106,25 +107,11 @@ class Astar:
 		return l
 
 	def makePoint(self, x, y):
-		#p = Point()
-		#p.x = x;
-		#p.y = y;
-		#if (x < 37 and x >= 0 and y >= 0 and y < 37):
-		#print 'Making point', x, y, self.oc.info.width, self.oc.info.height
 		if (abs(x) < self.oc.info.width and abs(y) < self.oc.info.height):
 			return self.nodes[x][y]
 		return -1
 
-	def isOccupied(self, p):
-		'''a = []
-		for i in range(int(round(0.3/self.oc.info.resolution))):
-			x = round(i + (p.x)*(0.3/self.oc.info.resolution))
-			for j in range(int(round(0.3/self.oc.info.resolution))):
-				y = round(j + (p.y)*(0.3/self.oc.info.resolution))
-				if (x < self.oc.info.width and y < self.oc.info.height):
-					if self.oc.data[int(x + y*self.oc.info.width)] == 100:
-		
-					return True '''			
+	def isOccupied(self, p):		
 		if (self.oc.data[p.x + p.y*self.oc.info.width] == 100):
 			return True
 		return False

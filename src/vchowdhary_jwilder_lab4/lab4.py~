@@ -13,7 +13,7 @@ from tf.transformations import euler_from_quaternion
 from astar import *
 from Queue import PriorityQueue
 
-
+# Adds padding to the map.
 def padding():
 	global oc
 	global pad_pts
@@ -36,7 +36,7 @@ def padding():
 
 	return noc
 
-
+# Checks to see if i,j is a valid point and if it is, then marks i,j as 100 (occupied).
 def addAround(n, i, j):
 	global oc
 	global pad_pts
@@ -49,7 +49,7 @@ def addAround(n, i, j):
 	n[i + j*oc.info.width] = 100
 	return n
 
-
+# Update the map when a new message is received
 def updateMap(oc_grid):
 	global oc
 	global updatedMap
@@ -58,20 +58,17 @@ def updateMap(oc_grid):
 	print 'Retreived map'
 	oc = oc_grid
 	updatedMap = True
+	blocked = []
 	findFrontiers()
 	#if running:
 		#replan()
 
-def c(n):
-	r = []
-	for i in range(len(n)):
-		r.append(n[i]/100)
-	return r
-
+#Previous lab function. Unnecessary now.
 def goToGoal(g):
 	#navToGoal(g.pose.position)
 	print 'Not implemented anymore'
 
+# Takes a frontier and drives to that frontier.
 def navToGoal(f):
 	global oc
 	global pose
@@ -119,6 +116,8 @@ def navToGoal(f):
 		for p in f:
 			blocked.append(p)
 		driveToFrontier()
+
+# Replans the current path.
 def replan(e):
 	global p1
 	global p2
@@ -155,7 +154,7 @@ def replan(e):
 	#r.calculate()
 	
 
-
+# Determines which frontier to drive to, and sends instructions to drive to that frontier.
 def driveToFrontier():
 	global fs
 	global p1
@@ -188,6 +187,7 @@ def driveToFrontier():
 	#print 'Frontier', f
 	navToGoal(f)
 
+# Update the position of the robot.
 def updatePosition():
 	global pose
 	global p1
@@ -200,6 +200,8 @@ def updatePosition():
 	p1.x = int((pose.pose.position.x / 0.15))
 	p1.y = int((pose.pose.position.y/ 0.15))
 
+
+# Marks the GridCells in RVIZ. This function is purely for visual testing/debugging.
 def visit(lofp, pub):
 	
 	grid = GridCells()
@@ -215,7 +217,7 @@ def visit(lofp, pub):
 
 	pub.publish(grid)
 
-
+# Finds the frontier regions on the map.
 def findFrontiers():
 	global oc
 	global marked
@@ -257,6 +259,7 @@ def findFrontiers():
 	pub_visited.publish(grid)
 	return fs
 
+# Helper function for findFrontiers that adds a point to one of the frontier regions.
 def addTo(fs, x, y):
 	cfr = [(x,y)] #holds the frontier region containing x,y
 	nf = [] # new copy of the frontier regions
@@ -278,6 +281,7 @@ def addTo(fs, x, y):
 	#print fs
 	return nf
 
+# Calculates the distance between two points.
 def distance(a1, a2):
 	return abs(a1[0] - a2.x) + abs(a1[1] - a2.y)
 
@@ -290,7 +294,7 @@ def centroid(fs):
 		sumy += i[1]
 	return (sumx/len(fs), sumy/len(fs))
 
-
+# Determines if two points are adjacent.
 def adjacent(x1, y1, x2, y2):
 	return abs(x1-x2) <= 1 and abs(y1-y2) <=1
 
@@ -309,26 +313,14 @@ def isFrontier(x, y):
 	return False
 
 
+# Returns the map value at x,y.
 def getValue(x, y):
 	global noc
 	if (x < 0 or x >= noc.info.width  or y < 0 or y >= noc.info.height):
 		return 100
 	return oc.data[x + y*noc.info.width]
-	"""
-	if (x < 0 or (scale + x*(0.3/oc.info.resolution) >= oc.info.width) or y < 0 or (scale + y*(0.3/oc.info.resolution) >= oc.info.height)):
-		return float('inf')
-	for i in range(scale):
-		x1 = round(i + (x)*(0.3/oc.info.resolution))
-		for j in range(scale):
-			y1 = round(j + (y)*(0.3/oc.info.resolution))
-			print 'trying', x1, y1, x1+y1*oc.info.width, len(oc.data), oc.info.width, oc.info.height
-			if oc.data[int(x1 + y1*oc.info.width)] == 100:
-				return 100
-			elif oc.data[int(x1 + y1*oc.info.width)] == -1:
-				return -1			
-	return 0
-	"""
 
+# Creates an astar object to calculate the path. Takes a start, goal, and a map.
 def makeAstar(start, goal, data):
 	global pub_end
 	global pub_path
@@ -363,6 +355,7 @@ if __name__ == '__main__':
 	global running
 	global blocked
 
+	blocked = []
 	running = False
 	pad_pts = []
 	updatedMap = False
@@ -385,27 +378,17 @@ if __name__ == '__main__':
 	sub_goal = rospy.Subscriber('/GoalPoint', PoseStamped, goToGoal)
 	map_sub = rospy.Subscriber('/map', OccupancyGrid, updateMap, queue_size=1)
 	odom_list = tf.TransformListener()
-    # Use this command to make the program wait for some seconds
+
 	rospy.sleep(rospy.Duration(2, 0))
 	
 	while (not updatedMap and not rospy.is_shutdown()):
 		print 'stuck'
 		rospy.sleep(1)
-	blocked = []
+	
 	driveToFrontier()
 
-	# while ros_not_shutdown
 	while (not rospy.is_shutdown()):
 		rospy.sleep(1)
-	#oc.data = padding()
-
-	#r = Astar(p1, p2, oc, pub_end, pub_path, pub_visited, pub_frontier, pub_waypoints)
-
-
-	#print 'occupied?', r.isOccupied(p2)
-	#print 'origin', oc.info.origin.position.x, oc.info.origin.position.y
-	#print 'robot at', p1.x, p1.y, pose.pose.position.x, pose.pose.position.y
-	#r.calculate()
 
 
 	

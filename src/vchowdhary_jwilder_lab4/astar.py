@@ -82,8 +82,6 @@ class Astar:
 		return math.sqrt((self.goal.p.x - point.p.x)**2 + (self.goal.p.y - point.p.y)**2)
 
 	def costTo(self, s1, s2, path):
-		#if (self.isOccupied(s2) or self.isOccupied(s1)):
-		#	return float('inf')
 		if (self.oc.data[s2.p.x + s2.p.y*self.oc.info.width] == -1):
 			return 10
 		return 2 #+ self.costMap[s2.p.x + s2.p.y*self.oc.info.width]
@@ -107,25 +105,11 @@ class Astar:
 		return l
 
 	def makePoint(self, x, y):
-		#p = Point()
-		#p.x = x;
-		#p.y = y;
-		#if (x < 37 and x >= 0 and y >= 0 and y < 37):
-		#print 'Making point', x, y, self.oc.info.width, self.oc.info.height
 		if (abs(x) < self.oc.info.width and abs(y) < self.oc.info.height):
 			return self.nodes[x][y]
 		return -1
 
-	def isOccupied(self, p):
-		'''a = []
-		for i in range(int(round(0.3/self.oc.info.resolution))):
-			x = round(i + (p.x)*(0.3/self.oc.info.resolution))
-			for j in range(int(round(0.3/self.oc.info.resolution))):
-				y = round(j + (p.y)*(0.3/self.oc.info.resolution))
-				if (x < self.oc.info.width and y < self.oc.info.height):
-					if self.oc.data[int(x + y*self.oc.info.width)] == 100:
-		
-					return True '''			
+	def isOccupied(self, p):		
 		if (self.oc.data[p.x + p.y*self.oc.info.width] == 100):
 			return True
 		return False
