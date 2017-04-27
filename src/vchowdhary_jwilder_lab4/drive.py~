@@ -24,14 +24,17 @@ def drivePath(gridcells):
 	
 	currp = pose.pose.position	
 	navToPose(waypts[0])
-	
+	publishTwist(0.3, 0)
+	rospy.sleep(0.5)
+	publishTwist(0, 0)
+	'''
 	for w in waypts[1:]:
 		print 'DISTANCE TO WAYPOINT', abs(w.x - currp.x) + abs(w.y - currp.y), currp.x, currp.y
-		if ( abs(w.x - currp.x) + abs(w.y - currp.y) < 1):
+		if ( abs(w.x - currp.x) + abs(w.y - currp.y) < 2):
 			print 'Continuing Path'
 			navToPose(w)
 		else:
-			break
+			break'''
 	#for i in range(4):
 	#	rotate(90)
 	#	rospy.sleep(2)

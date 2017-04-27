@@ -177,6 +177,7 @@ def driveToFrontier():
 	g = Point()
 
 	if (len(fs) == 0):
+		print 'Finished'
 		return
 
 	temp = pq.get()
@@ -197,8 +198,8 @@ def updatePosition():
 	#print 'ORIGIN IS', oc.info.origin.position.x
 	pose.pose.position.x = position[0] - oc.info.origin.position.x
 	pose.pose.position.y = position[1] - oc.info.origin.position.y
-	p1.x = int((pose.pose.position.x / 0.15))
-	p1.y = int((pose.pose.position.y/ 0.15))
+	p1.x = int((pose.pose.position.x / 0.2))
+	p1.y = int((pose.pose.position.y/ 0.2))
 
 
 # Marks the GridCells in RVIZ. This function is purely for visual testing/debugging.
@@ -211,8 +212,8 @@ def visit(lofp, pub):
 	
 	for p in lofp:
 		point = Point()
-		point.x = (p.x)*oc.info.resolution + 0.15 + oc.info.origin.position.x
-		point.y = (p.y)*oc.info.resolution + 0.15 + oc.info.origin.position.y
+		point.x = (p.x)*oc.info.resolution + 0.2 + oc.info.origin.position.x
+		point.y = (p.y)*oc.info.resolution + 0.2 + oc.info.origin.position.y
 		grid.cells.append(point)
 
 	pub.publish(grid)
@@ -247,14 +248,14 @@ def findFrontiers():
 
 	grid = GridCells()
 	grid.header.frame_id = 'map'
-	grid.cell_width = 0.15
-	grid.cell_height = 0.15
+	grid.cell_width = 0.2
+	grid.cell_height = 0.2
 	for f in fs:
 		#print f
 		for p in f:
 			point = Point()
-			point.x = p[0]*0.15 + 0.075 + oc.info.origin.position.x
-			point.y = p[1]*0.15 + 0.075 + oc.info.origin.position.y
+			point.x = p[0]*0.2 + 0.075 + oc.info.origin.position.x
+			point.y = p[1]*0.2 + 0.075 + oc.info.origin.position.y
 			grid.cells.append(point)
 	pub_visited.publish(grid)
 	return fs

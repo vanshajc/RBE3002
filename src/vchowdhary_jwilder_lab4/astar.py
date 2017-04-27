@@ -133,8 +133,8 @@ def visitCells(lofp, pub, oc):
 	
 	grid = GridCells()
 	grid.header.frame_id = 'map'
-	grid.cell_width = 0.15
-	grid.cell_height = 0.15
+	grid.cell_width = 0.2
+	grid.cell_height = 0.2
 
 	for p in lofp:
 		point = Point()
